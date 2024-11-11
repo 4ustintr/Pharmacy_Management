@@ -1,0 +1,124 @@
+.home {
+  display: flex;
+  position: relative; /* Để căn giữa loading hiệu ứng trong .home */
+  cursor: url("/pointer.png"), auto;
+
+
+  /* Loading overlay */
+  .loadingContainer {
+    margin: 0;
+    padding: 0;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    background: radial-gradient(circle at 50% 100%, #434649, rgb(90, 84, 84));
+  }
+
+  .loadingMessage {
+    font-size: 16px;
+    color: white;
+    margin-top: 20px;
+    text-align: center;
+  }
+
+  /* Hiệu ứng progress bar */
+  .progress-bar-container {
+    width: 80%;
+    height: 10px;
+    background-color: rgba(255, 255, 255, 0.2);
+    margin-top: 20px;
+    border-radius: 5px;
+    overflow: hidden;
+  }
+
+  .progress-bar {
+    width: 50%; /* Đổi thành giá trị động để phản ánh quá trình tải */
+    height: 100%;
+    background-color: #0fe66c;
+    animation: progressBar 2.5s linear forwards;
+  }
+
+  @keyframes progressBar {
+    0% { width: 0%; }
+    100% { width: 100%; }
+  }
+
+  /* Loading pill animation */
+  .pill {
+    display: flex;
+    flex-direction: column;
+    gap: 1vmin;
+    animation: spin 3s linear infinite; /* Hiệu ứng xoay cho biểu tượng thuốc */
+
+    .side {
+      background: #f7c340;
+      position: relative;
+      overflow: hidden;
+      width: 11vmin;
+      height: 15vmin;
+      border-radius: 6vmin 6vmin 0 0;
+      animation: bubbles 2s ease-in-out infinite; /* Hiệu ứng sủi bọt */
+    }
+
+    .side + .side {
+      background: #d9680c;
+      border-radius: 0 0 6vmin 6vmin;
+      border-top: 1vmin solid #621e1a;
+      animation: open 2s ease-in-out 0s infinite;
+    }
+  }
+
+  /* Hiệu ứng xoay */
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  /* Hiệu ứng sủi bọt */
+  @keyframes bubbles {
+    0% { box-shadow: 0 0 0 rgba(255, 255, 255, 0.6); }
+    50% { box-shadow: 0 0 15px rgba(255, 255, 255, 0.8), 0 0 30px rgba(255, 255, 255, 0.6); }
+    100% { box-shadow: 0 0 0 rgba(255, 255, 255, 0.6); }
+  }
+
+  /* Hiệu ứng mở pill */
+  @keyframes open {
+    0%, 20%, 80%, 100% { margin-top: 0; }
+    30%, 70% { margin-top: 10vmin; }
+  }
+}
+
+.homeContainer {
+  flex: 6;
+  display: flex;
+  flex-direction: column;
+  opacity: 1; /* Đảm bảo nội dung trong suốt khi loading */
+
+  .widgets,
+  .charts {
+    display: flex;
+    padding: 20px;
+    gap: 20px;
+  }
+
+  .charts {
+    padding: 5px 20px;
+  }
+
+  .listContainer {
+    -webkit-box-shadow: 2px 4px 10px 1px rgba(0, 0, 0, 0.47);
+    box-shadow: 2px 4px 10px 1px rgba(201, 201, 201, 0.47);
+    padding: 20px;
+    margin: 20px;
+
+    .listTitle {
+      font-weight: 500;
+      color: gray;
+      margin-bottom: 15px;
+    }
+  }
+}
