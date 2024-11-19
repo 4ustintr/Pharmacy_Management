@@ -1,35 +1,51 @@
 package com.pharmacymanagement.backend.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+import lombok.Data;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 @Entity
+@Data
+@Table(name = "medicine")
 public class Medicine {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int medicineId;
+
+    @Column(name = "medicine_name")
     private String medicineName;
+
     private int quantity;
-    private Date expDate;
-    private Date entryDate;
-    private int supplierId;
+
+    @Column(name = "exp_date")
+    private LocalDate expDate;
+
+    @Column(name = "entry_date")
+    private LocalDate entryDate;
+
+    @Column(name = "medicine_type")
     private String medicineType;
 
     public Medicine() {
     }
 
-    public Medicine(String medicineName, int quantity, Date expDate, Date entryDate, int supplierId, String medicineType) {
+    public Medicine(String medicineName, int quantity, LocalDate expDate, LocalDate entryDate,  String medicineType) {
         this.medicineName = medicineName;
         this.quantity = quantity;
         this.expDate = expDate;
         this.entryDate = entryDate;
-        this.supplierId = supplierId;
+        this.quantity = quantity;
         this.medicineType = medicineType;
+    }
+
+    public int getMedicineId() {
+        return medicineId;
+    }
+
+    public void setMedicineId(int medicineId) {
+        this.medicineId = medicineId;
     }
 
     public String getMedicineName() {
@@ -48,28 +64,20 @@ public class Medicine {
         this.quantity = quantity;
     }
 
-    public Date getExpDate() {
+    public LocalDate getExpDate() {
         return expDate;
     }
 
-    public void setExpDate(Date expDate) {
+    public void setExpDate(LocalDate expDate) {
         this.expDate = expDate;
     }
 
-    public Date getEntryDate() {
+    public LocalDate getEntryDate() {
         return entryDate;
     }
 
-    public void setEntryDate(Date entryDate) {
+    public void setEntryDate(LocalDate entryDate) {
         this.entryDate = entryDate;
-    }
-
-    public int getSupplierId() {
-        return supplierId;
-    }
-
-    public void setSupplierId(int supplierId) {
-        this.supplierId = supplierId;
     }
 
     public String getMedicineType() {
@@ -88,8 +96,8 @@ public class Medicine {
                 ", quantity=" + quantity +
                 ", expDate=" + expDate +
                 ", entryDate=" + entryDate +
-                ", supplierId=" + supplierId +
                 ", medicineType='" + medicineType + '\'' +
+//                ", quantityContribution=" + quantityContribution +
                 '}';
     }
 }
