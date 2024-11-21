@@ -11,6 +11,7 @@ import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
 import SettingsSystemDaydreamOutlinedIcon from "@mui/icons-material/SettingsSystemDaydreamOutlined";
 import PsychologyOutlinedIcon from "@mui/icons-material/PsychologyOutlined";
 import AccountCircleOutlinedIcon from "@mui/icons-material/AccountCircleOutlined";
+import FactoryIcon from '@mui/icons-material/Factory';
 import { Link } from "react-router-dom";
 import { DarkModeContext } from "../../context/darkModeContext";
 import { useContext } from "react";
@@ -23,7 +24,7 @@ const Sidebar = () => {
     <div className="sidebar">
       <div className="top">
         <Link to="/" style={{ textDecoration: "none" }}>
-          <span className="logo">Medicine App</span>
+          <span className="logo">Medical App</span>
         </Link>
       </div>
       <hr />
@@ -43,7 +44,7 @@ const Sidebar = () => {
               <span>Bệnh nhân</span>
             </li>
           </Link>
-          <Link to="/tuthuoc" style={{ textDecoration: "none" }}>
+          <Link to="/tuthuoc" style={{ textDecoration: "none" }} >
             <li>
               <StoreIcon className="icon" />
               <span>Tủ thuốc</span>
@@ -62,48 +63,34 @@ const Sidebar = () => {
             </li>
           </Link>
           <Link/>
-          <Link to="/khothuoc"style={{ textDecoration: "none" }} >
+          <Link to="/khothuoc" style={{ textDecoration: "none" }} >
             <li>
-              <LocalShippingIcon className="icon" />
+              <FactoryIcon  className="icon" />
               <span>Tồn kho</span>
             </li>
           </Link>
           <Link/>
-          <Link to="/khothuoc" style={{ textDecoration: "none" }}>
+          <p className="title" style={{ textDecoration: "none" }}>Tiện ích</p>
+          <Link to="/lich" style={{ textDecoration: "none" }}>
             <li>
-              <ManIcon className="icon" />
-              <span>Nhân sự </span>
+              <SettingsSystemDaydreamOutlinedIcon className="icon" />
+              <span>Lịch trực</span>
             </li>
           </Link>
-          <p className="title">Số liệu</p>
-          <li>
-            <InsertChartIcon className="icon" />
-            <span>Thống kê</span>
-          </li>
           <Link to="/thongbao" style={{ textDecoration: "none" }}>
             <li>
               <NotificationsNoneIcon className="icon" />
-              <span>Thông báo </span>
+              <span>Thông báo</span>
             </li>
           </Link>
-          <p className="title">Dịch vụ</p>
-          <li>
-            <SettingsSystemDaydreamOutlinedIcon className="icon" />
-            <span>System Health</span>
-          </li>
-          <li>
-            <PsychologyOutlinedIcon className="icon" />
-            <span>Logs</span>
-          </li>
-          <p className="title">Tài khoản</p>
-          <li>
-            <AccountCircleOutlinedIcon className="icon" />
-            <span>Cá nhân</span>
-          </li>
-          <li>
-            <SettingsApplicationsIcon className="icon" />
-            <span>Cài đặt</span>
-          </li>
+          <p className="title" style={{ textDecoration: "none" }}>Tài khoản</p>
+          <Link to="/canhan" style={{ textDecoration: "none" }}>
+            <li>
+              <AccountCircleOutlinedIcon className="icon" />
+              <span>Cá nhân</span>
+            </li>
+
+          </Link>
           <Link to="/login" style={{ textDecoration: "none" }}>
             <li>
               <ExitToAppIcon className="icon" />

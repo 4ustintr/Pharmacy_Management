@@ -4,9 +4,9 @@
   flex: 4;
   padding: 85px;
   -webkit-box-shadow: 2px 4px 10px 1px rgba(0, 0, 0, 0.47);
-  box-shadow: 4px 6px 12px 3px rgba(201, 201, 201, 0.47);
+  box-shadow: 2px 4px 10px 1px rgba(201, 201, 201, 0.47);
   border-radius: 10px;
-  height: 100px;
+  height: 200px;
 
   .left,
   .right {
@@ -16,12 +16,12 @@
 
     .title {
       font-weight: bold;
-      font-size: 24px;
+      font-size: 26px;
       color: rgb(160, 160, 160);
     }
 
     .counter {
-      font-size: 34px;
+      font-size: 50px; 
       font-weight: 300;
     }
 
@@ -34,7 +34,7 @@
     .percentage {
       display: flex;
       align-items: center;
-      font-size: 16px;
+      font-size: 20px;
 
       &.positive {
         color: green;
@@ -45,7 +45,7 @@
     }
 
     .icon {
-      font-size: 24px;
+      font-size: 32px;
       padding: 7px;
       border-radius: 7px;
       align-self: flex-end;

@@ -3,18 +3,17 @@
   border-right: 1px solid rgb(230, 227, 227);
   min-height: 100vh;
   background-color: #ffffff;
-  padding: 20px;
-  cursor: url('public/pointer.png') 16 16 , auto;
+  padding: 23px;
 
   .top {
-    height: 60px;
+    height: 100px;
     display: flex;
     align-items: center;
     justify-content: center;
     margin-bottom: 20px;
 
     .logo {
-      font-size: 28px;
+      font-size: 32px;
       font-weight: bold;
       color: #6439ff;
     }
@@ -34,7 +33,7 @@
       padding: 0;
 
       .title {
-        font-size: 22px;
+        font-size: 28px;
         font-weight: bold;
         color: #999;
         margin-top: 20px;
@@ -46,7 +45,8 @@
         align-items: center;
         padding: 12px; // Tăng padding cho mục
         cursor: pointer;
-        border-radius: 5px; // Bo góc cho mục
+        text-decoration: none;
+        border-radius: 8px; // Bo góc cho mục
         transition: all 0.3s; // Thêm hiệu ứng cho mọi thay đổi
 
         &:hover {
@@ -60,16 +60,15 @@
         }
 
         .icon {
-          font-size: 26px; // Tăng kích thước biểu tượng
+          font-size: 30px; // Tăng kích thước biểu tượng
           color: #7451f8;
         }
 
         span {
-          font-size: 26px; // Tăng kích thước chữ cho văn bản
+          font-size: 30px; // Tăng kích thước chữ cho văn bản
           font-weight: 600;
           color: #888;
-          margin-left: 18px;
-          text-decoration: none; // Tăng khoảng cách trái cho văn bản
+          margin-left: 15px; // Tăng khoảng cách trái cho văn bản
         }
       }
     }

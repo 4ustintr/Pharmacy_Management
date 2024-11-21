@@ -16,8 +16,8 @@ const Featured = () => {
         <div className="featuredChart">
           <CircularProgressbar value={70} text={"70%"} strokeWidth={5} />
         </div>
-        <p className="title">Lượng thuốc được bán ra trong ngày</p>
-        <p className="amount">$420</p>
+        <p className="title">Lượng thuóc xuất ra so với tháng trước</p>
+        <p className="amount">Tăng 420 tổng chỉ tiêu</p>
         <p className="desc">
         Xử lý giao dịch trước đó. Các khoản thanh toán cuối cùng có thể không được bao gồm.
         </p>
@@ -33,14 +33,14 @@ const Featured = () => {
             <div className="itemTitle">Tuần trước</div>
             <div className="itemResult positive">
               <KeyboardArrowUpOutlinedIcon fontSize="small"/>
-              <div className="resultAmount">$12.4k</div>
+              <div className="resultAmount">300k</div>
             </div>
           </div>
           <div className="item">
             <div className="itemTitle">Tháng trước</div>
             <div className="itemResult positive">
               <KeyboardArrowUpOutlinedIcon fontSize="small"/>
-              <div className="resultAmount">$12.4k</div>
+              <div className="resultAmount">150</div>
             </div>
           </div>
         </div>

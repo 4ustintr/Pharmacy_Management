@@ -1,39 +1,92 @@
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import "./widget.scss";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
-import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
-import AccountBalanceWalletOutlinedIcon from "@mui/icons-material/AccountBalanceWalletOutlined";
 import ShoppingCartOutlinedIcon from "@mui/icons-material/ShoppingCartOutlined";
 import MonetizationOnOutlinedIcon from "@mui/icons-material/MonetizationOnOutlined";
+import WarningAmberIcon from '@mui/icons-material/WarningAmber';
+import MedicationLiquidIcon from '@mui/icons-material/MedicationLiquid';
+import CountUp from 'react-countup'; // Import thư viện countup
+import WarehouseIcon from '@mui/icons-material/Warehouse';
 
 const Widget = ({ type }) => {
-  let data;
+  const navigate = useNavigate(); // Hook để điều hướng
+  const [expiredMedicinesCount, setExpiredMedicinesCount] = useState(0); // Thuốc hết hạn
+  const [totalMedicineStock, setTotalMedicineStock] = useState(0); // Tổng số thuốc hiện có
+  const [totalOrders, setTotalOrders] = useState(0); // Tổng đơn xuất thuốc
+  const [totalContributions, setTotalContributions] = useState(0); // Tổng nhập thuốc
+  const [diff, setDiff] = useState(20); // Tỉ lệ tăng trưởng
 
-  //temporary
-  const amount = 100;
-  const diff = 20;
+  // Gọi API và tính toán các số liệu
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // Lấy dữ liệu từ các API
+        const [medicinesResponse, ordersResponse, contributionsResponse] = await Promise.all([
+          fetch("http://localhost:8080/api/medicines"),
+          fetch("http://localhost:8080/api/invoice-details"),
+          fetch("http://localhost:8080/api/contributions")
+        ]);
+
+        const medicinesData = await medicinesResponse.json();
+        const ordersData = await ordersResponse.json();
+        const contributionsData = await contributionsResponse.json();
+
+        // Tính toán thuốc hết hạn
+        const today = new Date();
+        const expiredMedicines = medicinesData.filter((medicine) => {
+          const expDate = new Date(medicine.expDate);
+          return expDate < today;
+        });
+        setExpiredMedicinesCount(expiredMedicines.length);
+
+        // Tính tổng số thuốc hiện có
+        const totalStock = medicinesData.reduce((acc, medicine) => acc + medicine.quantity, 0);
+        setTotalMedicineStock(totalStock);
+
+        // Tính tổng đơn xuất thuốc
+        const totalOrders = ordersData.reduce((acc, order) => acc + order.quantityDetails, 0);
+        setTotalOrders(totalOrders);
+
+        // Tính tổng nhập thuốc
+        const totalContributions = contributionsData.reduce((acc, contribution) => acc + contribution.quantityContribution, 0);
+        setTotalContributions(totalContributions);
+
+      } catch (error) {
+        console.error("Lỗi khi gọi API:", error);
+      }
+    };
+
+    fetchData();
+  }, []); // Chỉ gọi API khi component được mount
+
+  let data;
 
   switch (type) {
     case "user":
       data = {
-        title: "Tỉ lệ phản hồi",
+        title: "Thuốc hiện có",
         isMoney: false,
-        link: "Xem tỉ lệ",
+        link: "Xem chi tiết",
+        route: "/tuthuoc", // Đường dẫn khi nhấn vào
         icon: (
-          <PersonOutlinedIcon
+          <MedicationLiquidIcon 
             className="icon"
             style={{
-              color: "crimson",
-              backgroundColor: "rgba(255, 0, 0, 0.2)",
+              color: "blue",
+              backgroundColor: "rgba(255, 225, 225, 0.2)",
             }}
           />
         ),
+        amount: totalMedicineStock // Hiển thị tổng số thuốc hiện có
       };
       break;
     case "order":
       data = {
-        title: "Lượng đặt thuốc",
+        title: "Xuất thuốc",
         isMoney: false,
-        link: "Xem toàn bộ",
+        link: "Xem chi tiết",
+        route: "/xuatthuoc",
         icon: (
           <ShoppingCartOutlinedIcon
             className="icon"
@@ -43,49 +96,64 @@ const Widget = ({ type }) => {
             }}
           />
         ),
+        amount: totalOrders // Hiển thị tổng đơn xuất thuốc
       };
       break;
     case "earning":
       data = {
-        title: "Doanh thu ",
-        isMoney: true,
-        link: "Xem doanh thu",
+        title: "Nhập thuốc",
+        isMoney: false,
+        link: "Xem chi tiết",
+        route: "/phieunhap",
         icon: (
-          <MonetizationOnOutlinedIcon
+          <WarehouseIcon
             className="icon"
             style={{ backgroundColor: "rgba(0, 128, 0, 0.2)", color: "green" }}
           />
         ),
+        amount: totalContributions // Hiển thị tổng nhập thuốc
       };
       break;
     case "balance":
       data = {
-        title: "Doanh thu nhà thuốc",
+        title: "Thuốc hết hạn",
         isMoney: true,
-        link: "",
+        link: "Xem chi tiết",
+        route: "/khothuoc",
         icon: (
-          <AccountBalanceWalletOutlinedIcon
+          <WarningAmberIcon
             className="icon"
             style={{
-              backgroundColor: "rgba(128, 0, 128, 0.2)",
-              color: "purple",
+              backgroundColor: "rgba(225, 225, 225, 0.2)",
+              color: "red",
             }}
           />
         ),
+        amount: expiredMedicinesCount // Hiển thị số thuốc hết hạn
       };
       break;
     default:
       break;
   }
 
+  const handleNavigate = () => {
+    if (data?.route) {
+      navigate(data.route); // Điều hướng đến trang tương ứng
+    }
+  };
+
   return (
     <div className="widget">
       <div className="left">
         <span className="title">{data.title}</span>
         <span className="counter">
-          {data.isMoney && "$"} {amount}
+          {data.isMoney && ""} 
+          {/* Sử dụng CountUp để hiển thị số liệu từ 0 đến số thực tế */}
+          <CountUp start={0} end={data.amount} duration={2.5} separator="," />
         </span>
-        <span className="link">{data.link}</span>
+        <span className="link" onClick={handleNavigate} style={{ cursor: "pointer", color: "blue" }}>
+          {data.link}
+        </span>
       </div>
       <div className="right">
         <div className="percentage positive">

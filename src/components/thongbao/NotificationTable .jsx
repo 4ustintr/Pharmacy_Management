@@ -1,76 +1,154 @@
-// src/components/notificationTable/NotificationTable.jsx
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import "./notificationTable.scss";
 
-const notifications = [
-  { id: 1, sender: "Phan Quang Thành", title: "Code mẫu Modal, Table components", description: "Đã có mẫu code cho các thành phần Modal và Table.", sentTime: "15:04 06/11/2024" },
-  { id: 2, sender: "Phòng Công tác sinh viên", title: "TB về việc nhận đơn thắc mắc/kiếu nại của sinh viên", description: "Thông báo về việc tiếp nhận đơn thắc mắc cho kỳ HK2 (2023-2024).", sentTime: "11:41 06/11/2024" },
-  { id: 3, sender: "Nguyễn Việt Dũng", title: "Thay đổi lịch học chiều ngày 30/10/2024", description: "Lịch học chiều ngày 30/10/2024 đã được thay đổi.", sentTime: "08:15 30/10/2024" },
-  // Thêm các thông báo khác ở đây
-];
-
 const NotificationTable = () => {
-  const [filteredNotifications, setFilteredNotifications] = useState(notifications);
-  const [senderFilter, setSenderFilter] = useState("");
-  const [keywordFilter, setKeywordFilter] = useState("");
+  const [medications, setMedications] = useState([]);
+  const [expiredMedications, setExpiredMedications] = useState([]);
+  const [expiringSoonMedications, setExpiringSoonMedications] = useState([]);
+  const [filteredMedications, setFilteredMedications] = useState([]);
+  const [keyword, setKeyword] = useState("");
 
-  // Bộ lọc thông báo theo người gửi và từ khóa
-  const handleFilter = () => {
-    const filtered = notifications.filter(notification => {
-      return (
-        (senderFilter === "" || notification.sender.includes(senderFilter)) &&
-        (keywordFilter === "" || notification.title.includes(keywordFilter) || notification.description.includes(keywordFilter))
-      );
-    });
-    setFilteredNotifications(filtered);
+  // Hàm kiểm tra thuốc hết hạn
+  const isExpired = (expDate) => {
+    const today = new Date();
+    const expiry = new Date(expDate);
+    return expiry < today;
   };
 
-  // Cập nhật bộ lọc khi thay đổi
-  const handleSenderChange = (e) => setSenderFilter(e.target.value);
-  const handleKeywordChange = (e) => setKeywordFilter(e.target.value);
+  // Hàm kiểm tra thuốc sắp hết hạn (trong vòng 30 ngày)
+  const isExpiringSoon = (expDate) => {
+    const today = new Date();
+    const expiry = new Date(expDate);
+    const diffTime = expiry - today;
+    const diffDays = diffTime / (1000 * 3600 * 24);
+    return diffDays <= 30 && diffDays > 0;
+  };
+
+  // Lấy dữ liệu từ API
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get("http://localhost:8080/api/medicines"); // Thay bằng URL API thực tế
+        const fetchedMedications = response.data;
+
+        // Phân loại thuốc hết hạn và sắp hết hạn
+        const expired = fetchedMedications.filter((medication) =>
+          isExpired(medication.expDate)
+        );
+        const expiringSoon = fetchedMedications.filter((medication) =>
+          isExpiringSoon(medication.expDate)
+        );
+
+        // Cập nhật danh sách thuốc
+        setMedications(fetchedMedications);
+        setExpiredMedications(expired);
+        setExpiringSoonMedications(expiringSoon);
+        setFilteredMedications([...expired, ...expiringSoon]);
+
+        // Hiển thị thông báo
+        if (expired.length > 0) {
+          toast.error(`⚠️ Có ${expired.length} thuốc đã hết hạn!`);
+        }
+        if (expiringSoon.length > 0) {
+          toast.warning(`⏳ Có ${expiringSoon.length} thuốc sắp hết hạn!`);
+        }
+      } catch (error) {
+        console.error("Lỗi khi lấy dữ liệu thuốc:", error);
+        toast.error("Không thể lấy dữ liệu thuốc từ máy chủ!");
+      }
+    };
+    fetchData();
+  }, []);
+
+  // Hàm xử lý bộ lọc
+  const handleFilter = () => {
+    const filtered = [...expiredMedications, ...expiringSoonMedications].filter(
+      (medication) =>
+        medication.medicineName.toLowerCase().includes(keyword.toLowerCase()) ||
+        medication.medicineType.toLowerCase().includes(keyword.toLowerCase())
+    );
+    setFilteredMedications(filtered);
+  };
 
   return (
     <div className="notificationTable">
+      {/* Khung hiển thị thông báo */}
+      <div className="notificationCard">
+        <div className="card expired">
+          <h4>Thuốc đã hết hạn</h4>
+          <p>{expiredMedications.length}</p>
+        </div>
+        <div className="card expiringSoon">
+          <h4>Thuốc sắp hết hạn</h4>
+          <p>{expiringSoonMedications.length}</p>
+        </div>
+      </div>
+
+      {/* Bộ lọc */}
       <div className="filterSection">
-        <input
-          type="text"
-          placeholder="Lọc theo người gửi"
-          value={senderFilter}
-          onChange={handleSenderChange}
-        />
-        <input
-          type="text"
-          placeholder="Tìm kiếm theo từ khóa"
-          value={keywordFilter}
-          onChange={handleKeywordChange}
-        />
-        <button onClick={handleFilter}>Lọc</button>
+        <div className="filterContainer">
+          <input
+            type="text"
+            placeholder="Tìm kiếm thuốc..."
+            value={keyword}
+            onChange={(e) => setKeyword(e.target.value)}
+          />
+          <button onClick={handleFilter}>Lọc</button>
+        </div>
       </div>
-      <div className="summarySection">
-        <p>Tổng số thông báo: {filteredNotifications.length}</p>
-      </div>
-      <table>
-        <thead>
-          <tr>
-            <th>TT</th>
-            <th>Người gửi</th>
-            <th>Tiêu đề</th>
-            <th>Mô tả</th>
-            <th>Thời gian gửi</th>
-          </tr>
-        </thead>
-        <tbody>
-          {filteredNotifications.map((notification, index) => (
-            <tr key={notification.id}>
-              <td>{index + 1}</td>
-              <td>{notification.sender}</td>
-              <td>{notification.title}</td>
-              <td>{notification.description}</td>
-              <td>{notification.sentTime}</td>
+
+
+      {/* Bảng thuốc */}
+      <div className="medicationTable">
+        <h3>Danh sách thuốc</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>TT</th>
+              <th>Tên thuốc</th>
+              <th>Loại thuốc</th>
+              <th>Số lượng</th>
+              <th>Hạn sử dụng</th>
+              <th>Trạng thái</th>
+              <th>Hành động</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {filteredMedications.map((medication, index) => (
+              <tr
+                key={medication.id}
+                style={{
+                  backgroundColor: isExpired(medication.expDate)
+                    ? "red"
+                    : "yellow",
+                }}
+              >
+                <td>{index + 1}</td>
+                <td>{medication.medicineName}</td>
+                <td>{medication.medicineType}</td>
+                <td>{medication.quantity}</td>
+                <td>{medication.expDate}</td>
+                <td>
+                  {isExpired(medication.expDate)
+                    ? "Hết hạn"
+                    : "Sắp hết hạn"}
+                </td>
+                <td>
+                  <a
+                    href={`/medicineCabinet/${medication.id}`}
+                    className="actionButton"
+                  >
+                    Xử lý ngay
+                  </a>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };

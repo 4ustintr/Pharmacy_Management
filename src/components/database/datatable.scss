@@ -1,78 +1,287 @@
 .datatable {
-    height: 600px;
-    padding: 20px;
-    
-    .datatableTitle{
-      width: 100%;
-      font-size: 24px;
-      color: gray;
-      margin-bottom: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-  
-      .link{
-        text-decoration: none;
-        color: green;
-        font-size: 16px;
-        font-weight: 400;
-        border: 1px solid green;
-        padding: 5px;
-        border-radius: 5px;
-        cursor: pointer;
+  font-family: Arial, sans-serif;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+
+  h2 {
+    font-size: 36px;
+    margin-bottom: 20px;
+    text-align: center;
+    color: #333;
+  }
+
+  .datatableHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+
+    .filters {
+      input {
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        width: 300px;
+        transition: border-color 0.3s;
+
+        &:focus {
+          border-color: #007bff;
+          outline: none;
+        }
       }
     }
-  
-    .cellWithImg {
+
+    .actions {
       display: flex;
-      align-items: center;
-  
-      .cellImg {
-        width: 32px;
-        height: 32px;
-        border-radius: 50%;
-        object-fit: cover;
-        margin-right: 20px;
-      }
-    }
-  
-    .cellWithStatus {
-      padding: 5px;
-      border-radius: 5px;
-  
-      &.active {
-        background-color: rgba(0, 128, 0, 0.05);
-        color: green;
-      }
-      &.pending {
-        background-color: rgba(255, 217, 0, 0.05);
-        color: goldenrod;
-      }
-      &.passive {
-        background-color: rgba(255, 0, 0, 0.05);
-        color: crimson;
-      }
-    }
-  
-    .cellAction {
-      display: flex;
-      align-items: center;
-      gap: 15px;
-  
-      .viewButton {
-        padding: 2px 5px;
-        border-radius: 5px;
-        color: darkblue;
-        border: 1px dotted rgba(0, 0, 139, 0.596);
+      gap: 10px;
+
+      .printButton,
+      .exportButton {
+        padding: 10px 15px;
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        border-radius: 4px;
         cursor: pointer;
-      }
-      
-      .deleteButton {
-        padding: 2px 5px;
-        border-radius: 5px;
-        color: crimson;
-        border: 1px dotted rgba(220, 20, 60, 0.6);
-        cursor: pointer;
+        font-size: 14px;
+        transition: background-color 0.3s;
+
+        &:hover {
+          background-color: #0056b3;
+        }
       }
     }
   }
+
+  .tableSection {
+    overflow-x: auto;
+    border-radius: 8px;
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+
+      thead {
+        background-color: #007bff;
+        color: #fff;
+
+        th {
+          padding: 12px;
+          text-align: left;
+          font-size: 14px;
+          white-space: nowrap;
+
+          input[type="checkbox"] {
+            cursor: pointer;
+          }
+        }
+      }
+
+      tbody {
+        tr {
+          &:nth-child(even) {
+            background-color: #f2f2f2;
+          }
+
+          &:hover {
+            background-color: #eaf4ff;
+          }
+
+          td {
+            padding: 12px;
+            font-size: 14px;
+            text-align: left;
+            vertical-align: middle;
+
+            .cellAction {
+              display: flex;
+              gap: 10px;
+
+              .viewButton,
+              .deleteButton {
+                cursor: pointer;
+                padding: 5px 10px;
+                border-radius: 4px;
+                font-size: 12px;
+                color: #fff;
+
+                &.viewButton {
+                  background-color: #dc3545;
+
+                  &:hover {
+                    background-color: #dc3545;
+                  }
+                }
+
+                &.deleteButton {
+                  background-color: #dc3545;
+
+                  &:hover {
+                    background-color: #c82333;
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+    gap: 10px;
+
+    button {
+      padding: 8px 12px;
+      border: none;
+      border-radius: 4px;
+      background-color: #007bff;
+      color: rgb(0, 0, 0);
+      cursor: pointer;
+      font-size: 14px;
+      transition: background-color 0.3s;
+
+      &:disabled {
+        background-color: rgb(196, 99, 99);
+        cursor: not-allowed;
+      }
+
+      &:hover:not(:disabled) {
+        background-color: #0056b3;
+      }
+    }
+
+    span {
+      font-size: 14px;
+    }
+  }
+
+  .error {
+    color: #dc3545;
+    font-size: 16px;
+    text-align: center;
+    margin-top: 20px;
+  }
+  .patientInfoModal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 400px;
+    max-width: 90%;
+    background-color: rgb(150, 89, 89);
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    z-index: 1000;
+  
+    .modalHeader {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+  
+      h3 {
+        margin: 0;
+        font-size: 20px;
+        color: #333;
+      }
+  
+      .closeButton {
+        background: none;
+        border: none;
+        font-size: 20px;
+        cursor: pointer;
+        color: #333;
+  
+        &:hover {
+          color: #007bff;
+        }
+      }
+    }
+  
+    .modalBody {
+      .infoRow {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 10px;
+        font-size: 14px;
+  
+        .label {
+          font-weight: bold;
+          color: #555;
+        }
+  
+        .value {
+          color: #333;
+        }
+      }
+  
+      .divider {
+        border-top: 1px solid #ddd;
+        margin: 15px 0;
+      }
+    }
+  
+    .modalFooter {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+  
+      .actionButton {
+        padding: 10px 15px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+        transition: background-color 0.3s;
+  
+        &.updateButton {
+          background-color: #28a745;
+          color: #fff;
+  
+          &:hover {
+            background-color: #218838;
+          }
+        }
+  
+        &.deleteButton {
+          background-color: #dc3545;
+          color: #fff;
+  
+          &:hover {
+            background-color: #c82333;
+          }
+        }
+  
+        &.cancelButton {
+          background-color: #6c757d;
+          color: #fff;
+  
+          &:hover {
+            background-color: #5a6268;
+          }
+        }
+      }
+    }
+  }
+  
+  .overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+  }
+  
+}
