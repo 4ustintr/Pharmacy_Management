@@ -24,7 +24,7 @@ const Login = () => {
 
     // Giả lập thời gian tải 3 giây
     setTimeout(() => {
-      if (username === '1' && password === '1') {
+      if (username === 'admin' && password === 'admin') {
         toast.success('Đăng nhập thành công!');
         navigate('/'); // Redirect to the dashboard
       } else {
@@ -43,42 +43,40 @@ const Login = () => {
       )}
 
       <div className="login-container">
-        <div className="login-image">
-          <img src="public/ptit.jpg" alt="Login Illustration" />
-        </div>
-        <div className="login-form">
-          <div className="form-box">
-            <h2>Đăng nhập</h2>
-            {error && <p className="error-message">{error}</p>}
-            <form onSubmit={handleLogin}>
-              <label htmlFor="username">Tên người dùng</label>
-              <input
-                type="text"
-                id="username"
-                placeholder="Nhập tên người dùng"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-              />
-
-              <label htmlFor="password">Mật khẩu</label>
-              <input
-                type="password"
-                id="password"
-                placeholder="Nhập mật khẩu"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-
-              <button type="submit">Đăng nhập</button>
-            </form>
-            <div className="login-options">
-              <a href="/forgot-password">Quên mật khẩu?</a>
-              <span> | </span>
-              <a href="/register">Đăng ký</a>
-            </div>
-          </div>
-        </div>
+  <div className="login-image">
+    {/* Có thể thêm ảnh hoặc để trống nếu không cần */}
+  </div>
+  <div className="login-form">
+    <div className="form-box">
+      <h2>Đăng nhập</h2>
+      {error && <p className="error-message">{error}</p>}
+      <form onSubmit={handleLogin}>
+        <label htmlFor="username">Tên người dùng</label>
+        <input
+          type="text"
+          id="username"
+          placeholder="Nhập tên người dùng"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+        />
+        <label htmlFor="password">Mật khẩu</label>
+        <input
+          type="password"
+          id="password"
+          placeholder="Nhập mật khẩu"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+        <button type="submit">Đăng nhập</button>
+      </form>
+      <div className="login-options">
+        <a href="/forgot-password">Quên mật khẩu?</a>
+        <span> | </span>
+        <a href="/register">Đăng ký</a>
       </div>
+    </div>
+  </div>
+</div>
 
       <ToastContainer /> {/* Đặt ToastContainer ở đây để hiện thông báo toast */}
     </>

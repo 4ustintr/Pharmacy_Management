@@ -147,7 +147,7 @@ const filteredMedicines = medicines.filter((medicine) => {
           onClick={() => paginate(currentPage - 1)}
           disabled={currentPage === 1}
         >
-          Trước
+          Trang trước
         </button>
         <span>
           Trang {currentPage} / {Math.ceil(filteredMedicines.length / medicinesPerPage)}
@@ -156,7 +156,7 @@ const filteredMedicines = medicines.filter((medicine) => {
           onClick={() => paginate(currentPage + 1)}
           disabled={currentPage === Math.ceil(filteredMedicines.length / medicinesPerPage)}
         >
-          Sau
+          Trang sau
         </button>
       </div>
 

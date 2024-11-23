@@ -23,7 +23,7 @@ const Datatable = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("http://localhost:8080/api/medicines");
+        const response = await axios.get("http://localhost:8080/api/patient");
         setData(response.data);
         setFilteredData(response.data);
       } catch (error) {
@@ -177,9 +177,9 @@ const Datatable = () => {
 
       {/* Phân trang */}
       <div className="pagination">
-        <button onClick={() => paginate(currentPage - 1)} disabled={currentPage === 1}>Trước</button>
+        <button onClick={() => paginate(currentPage - 1)} disabled={currentPage === 1}>Trang trước</button>
         <span>Trang {currentPage}</span>
-        <button onClick={() => paginate(currentPage + 1)} disabled={currentPage === pageNumbers.length}>Sau</button>
+        <button onClick={() => paginate(currentPage + 1)} disabled={currentPage === pageNumbers.length}>Trang sau</button>
       </div>
 
       <PatientInfoModal

@@ -37,7 +37,7 @@ const DrugDashboard = () => {
   const [selectedMedicine, setSelectedMedicine] = useState(null); 
   const [medicineList, setMedicineList] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);  // Trạng thái cho phân trang
-  const [medicinesPerPage] = useState(5);  // Số lượng thuốc trên mỗi trang
+  const [medicinesPerPage] = useState(10);  // Số lượng thuốc trên mỗi trang
   const [searchQuery, setSearchQuery] = useState(""); // Trạng thái lưu trữ từ khóa tìm kiếm
 
   // Lấy danh sách thuốc đã nhập từ API
@@ -57,8 +57,12 @@ const DrugDashboard = () => {
   // Cập nhật form nhập thuốc
   const handleFormChange = (e) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      [name]: value,
+    }));
   };
+
 
   // Gửi dữ liệu thuốc mới qua API POST
   const handleSubmit = async (e) => {
@@ -68,11 +72,12 @@ const DrugDashboard = () => {
       console.log("Data posted successfully:", response.data);
       setMedicineList((prev) => [...prev, response.data]); 
       setFormData({
+        medicineId:"",
         medicineName: "",
         medicineType: "",
-        supplierName: "",
-        supplierPhone: "",
-        quantityContribution: "",
+        entryDate: "",
+        expDate: "",
+        quantity: "",
       });
       setShowForm(false);
       toast.success("Lưu thuốc thành công!"); 
@@ -203,6 +208,9 @@ const DrugDashboard = () => {
           onChange={(e) => setSearchQuery(e.target.value)}
         />
       </div>
+      <button className="addButton" onClick={() => setShowForm(true)}>
+          Nhập thuốc
+        </button>
 
       {/* Bảng thuốc */}
       <div className="tableSection">
@@ -244,7 +252,7 @@ const DrugDashboard = () => {
             onClick={() => paginate(currentPage - 1)}
             disabled={currentPage === 1}
           >
-            Trước
+            Trang trước
           </button>
           <span className="page-info">
             Trang {currentPage} / {totalPages}
@@ -253,13 +261,9 @@ const DrugDashboard = () => {
             onClick={() => paginate(currentPage + 1)}
             disabled={currentPage === totalPages}
           >
-            Sau
+            Trang sau
           </button>
         </div>
-
-        <button className="addButton" onClick={() => setShowForm(true)}>
-          Nhập thuốc
-        </button>
       </div>
 
       {/* Form nhập thuốc */}
@@ -267,6 +271,16 @@ const DrugDashboard = () => {
         <div className="formOverlay">
           <form className="drugForm" onSubmit={handleSubmit}>
             <h3>Nhập thuốc</h3>
+            <label>
+              Mã ID thuốc:
+              <input
+                type="number"
+                name="medicineId"
+                value={formData.medicineId}
+                onChange={handleFormChange}
+                required
+              />
+            </label>
             <label>
               Tên thuốc:
               <input
@@ -288,21 +302,21 @@ const DrugDashboard = () => {
               />
             </label>
             <label>
-              Nhà cung cấp:
+              Ngày nhập thuốc:
               <input
-                type="text"
-                name="supplierName"
-                value={formData.supplierName}
+                type="date"
+                name="entryDate"
+                value={formData.entryDate}
                 onChange={handleFormChange}
                 required
               />
             </label>
             <label>
-              Số điện thoại nhà cung cấp:
+              Ngày hết hạn:
               <input
-                type="text"
-                name="supplierPhone"
-                value={formData.supplierPhone}
+                type="date"
+                name="expDate"
+                value={formData.expDate}
                 onChange={handleFormChange}
                 required
               />
@@ -311,13 +325,13 @@ const DrugDashboard = () => {
               Số lượng thuốc:
               <input
                 type="number"
-                name="quantityContribution"
-                value={formData.quantityContribution}
+                name="quantity"
+                value={formData.quantity}
                 onChange={handleFormChange}
                 required
               />
             </label>
-            <button type="submit">Lưu</button>
+            <button type="submit">Nhập</button>
             <button type="button" onClick={() => setShowForm(false)}>
               Hủy
             </button>

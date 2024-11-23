@@ -1,6 +1,20 @@
 .drugDashboard {
     padding: 20px;
     background-color: #f1f4f9;
+    .addButton {
+      margin-top: 20px;
+      padding: 10px 15px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      width: 15%;
+
+      &:hover {
+        background-color: #0056b3;
+      }
+    }
   
     .topSection {
       display: flex;
@@ -35,7 +49,7 @@
   
       .info p {
         margin: 10px 0;
-        font-size: 30px;
+        font-size:30px;
       }
     }
   
@@ -51,31 +65,34 @@
         justify-content: center;
         align-items: center;
         margin-top: 20px;
+        gap: 10px;
+        width: 20%;
+        margin-left:1000px;
+
       
         button {
-          background-color: #eff2f5;
-          color: rgb(13, 12, 12);
-          border: 1px solid #007bff;
-          padding: 10px 20px;
-          margin: 0 5px;
+          background-color: #4CAF50; /* Màu nền cho nút */
+          color: white; /* Màu chữ */
+          border: none;
+          padding: 8px 16px;
           font-size: 16px;
           cursor: pointer;
           border-radius: 5px;
           transition: background-color 0.3s ease;
       
-          &:hover {
-            background-color: #0056b3;
+          &:disabled {
+            background-color: #ddd; /* Màu cho nút disabled */
+            cursor: not-allowed;
           }
       
-          &:disabled {
-            background-color: #d6d6d6;
-            cursor: not-allowed;
+          &:hover:not(:disabled) {
+            background-color: #45a049; /* Màu khi hover */
           }
         }
       
-        .page-info {
+        span {
           font-size: 16px;
-          margin: 0 10px;
+          color: #333;
         }
       }
       
@@ -99,20 +116,7 @@
           background-color: #f1f4f9;
         }
       }
-  
-      .addButton {
-        margin-top: 20px;
-        padding: 10px 15px;
-        background-color: #007bff;
-        color: white;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-  
-        &:hover {
-          background-color: #0056b3;
-        }
-      }
+
     }
     /* Định dạng cho overlay modal */
 .modalOverlay {

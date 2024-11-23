@@ -3,6 +3,7 @@ import axios from "axios";
 import { Pie, Line } from "react-chartjs-2";
 import "react-toastify/dist/ReactToastify.css";
 import { ToastContainer, toast } from "react-toastify";
+import Them from "../tableUser/Them.jsx"
 
 import {
   Chart as ChartJS,
@@ -34,8 +35,10 @@ const DrugDashboard = () => {
   const [medicineList, setMedicineList] = useState([]);
   const [filter, setFilter] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
-  const [selectedMedicine, setSelectedMedicine] = useState(null);
   const [showPopup, setShowPopup] = useState(false);
+  const [selectedPatient, setSelectedPatient] = useState(null);
+  const [data, setData] = useState([]);
+  const [filteredData, setFilteredData] = useState([]);
 
   const itemsPerPage = 3; // Số thuốc mỗi trang
   const currentDate = new Date();
@@ -49,12 +52,11 @@ const DrugDashboard = () => {
         setMedicineList(response.data);
       } catch (error) {
         toast.error("Không thể tải danh sách thuốc!", { autoClose: 3000 });
-        console.error("Error fetching medicines:", error);selectedMedicine.expDate
+        console.error("Error fetching medicines:", error);
       }
     };
     fetchMedicines();
   }, []);
-  
 
   const expiredMedicines = medicineList.filter(
     (m) => new Date(m.expDate) < currentDate
@@ -87,6 +89,11 @@ const DrugDashboard = () => {
         ? Math.min(prevPage + 1, Math.ceil(filteredMedicines.length / itemsPerPage))
         : Math.max(prevPage - 1, 1)
     );
+  };
+  const handleDelete = (medicineId) => {
+    setData(data.filter((item) => item.medicineId !== medicineId));
+    setFilteredData(filteredData.filter((item) => item.medicineId !== medicineId));
+    toast.success("Đã xóa thuốc thành công!");
   };
 
   const pieChartData = {
@@ -147,6 +154,7 @@ const DrugDashboard = () => {
       console.error("Error processing medicine:", error);
     }
   };
+
   return (
     <div className="drugDashboard">
       {/* Toast Notification Container */}
@@ -162,7 +170,7 @@ const DrugDashboard = () => {
         pauseOnHover 
         theme="colored" 
       />
-  
+
       {/* Biểu đồ */}
       <div className="topSection">
         <div className="chartContainer">
@@ -172,7 +180,7 @@ const DrugDashboard = () => {
           <Line data={lineChartData} options={lineChartOptions} />
         </div>
       </div>
-  
+
       {/* Bộ lọc */}
       <div className="filterButtons">
         <button
@@ -200,7 +208,7 @@ const DrugDashboard = () => {
           Còn hạn
         </button>
       </div>
-  
+
       {/* Bảng thuốc */}
       <div className="tableSection">
         <table className="styledTable">
@@ -208,7 +216,6 @@ const DrugDashboard = () => {
             <tr>
               <th>Tên thuốc</th>
               <th>Loại thuốc</th>
-      
               <th>Hạn sử dụng</th>
               <th>Trạng thái</th>
               <th>Thông tin</th>
@@ -220,8 +227,6 @@ const DrugDashboard = () => {
                 <td>{medicine.medicineName}</td>
                 <td>{medicine.medicineType}</td>
                 <td>{medicine.expDate}</td>
-                
-              
                 <td>
                   {new Date(medicine.expDate) < currentDate
                     ? "Hết hạn"
@@ -230,62 +235,32 @@ const DrugDashboard = () => {
                     : "Còn hạn"}
                 </td>
                 <td>
-                  <button
-                    onClick={() => {
-                      setSelectedMedicine(medicine);
-                      setShowPopup(true);
-                    }}
-                  >
-                    Thông tin
-                  </button>
+                    <button
+                      className="viewButton"
+                      onClick={() => setSelectedPatient(medicine)}
+                    >
+                      Chi tiết
+                    </button>
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
-  
-        {/* Phân trang */}
-        <div className="pagination">
-          <button
-            disabled={currentPage === 1}
-            onClick={() => handlePageChange("prev")}
-          >
-            Trang trước
-          </button>
-          <span>
-            Trang {currentPage} / {Math.ceil(filteredMedicines.length / itemsPerPage)}
-          </span>
-          <button
-            disabled={
-              currentPage === Math.ceil(filteredMedicines.length / itemsPerPage)
-            }
-            onClick={() => handlePageChange("next")}
-          >
-            Trang sau
-          </button>
-        </div>
+        <Them
+        patient={selectedPatient}
+        onClose={() => setSelectedPatient(null)}
+        onDelete={handleDelete}
+      />
       </div>
-  
-      {/* Popup */}
-      {showPopup && selectedMedicine && (
-        <div className="popupOverlay">
-          <div className="popupContent">
-            <h3>Thông tin thuốc</h3>
-            <p>Tên thuốc: {selectedMedicine.medicineName}</p>
-            <p>Loại thuốc: {selectedMedicine.medicineType}</p>
 
-            <p>Hạn sử dụng: {selectedMedicine.expDate}</p>
-            <button onClick={() => handleProcessMedicine(selectedMedicine)}>
-              Xử lý thuốc
-            </button>
-            <button onClick={() => setShowPopup(false)}>Đóng</button>
-          </div>
-        </div>
-      )}
+      {/* Phân trang */}
+      <div className="pagination">
+        <button onClick={() => handlePageChange("prev")}>Trước</button>
+        <span>Trang {currentPage}</span>
+        <button onClick={() => handlePageChange("next")}>Sau</button>
+      </div>
     </div>
   );
-  
-  
 };
 
 export default DrugDashboard;

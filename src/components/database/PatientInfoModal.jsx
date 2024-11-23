@@ -23,7 +23,7 @@ const PatientInfoModal = ({ patient, onClose, onUpdate, onDelete }) => {
 
   const handleSave = async () => {
     try {
-      const response = await fetch(`http://localhost:8080/api/medicines${updatedPatient.patientId}`, {
+      const response = await fetch(`http://localhost:8080/api/patients${updatedPatient.patientId}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -48,7 +48,7 @@ const PatientInfoModal = ({ patient, onClose, onUpdate, onDelete }) => {
   const handleDelete = async () => {
     if (window.confirm("Bạn có chắc chắn muốn xóa bệnh nhân này không?")) {
       try {
-        const response = await fetch(`http://localhost:8080/api/medicines/${patient.patientId}`, {
+        const response = await fetch(`http://localhost:8080/api/patients/${patient.patientId}`, {
           method: "DELETE",
         });
 

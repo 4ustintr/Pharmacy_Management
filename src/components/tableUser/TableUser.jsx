@@ -3,8 +3,13 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import Them from "./Them.jsx";
 import * as XLSX from "xlsx";
-import { Chart as ChartJS, BarElement, CategoryScale, LinearScale, Tooltip, Legend } from "chart.js";
-import { Pie } from "react-chartjs-2";
+import { Chart as ChartJS, LineElement, PointElement, CategoryScale, LinearScale, Tooltip, Legend,BarElement } from "chart.js";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
+
+ChartJS.register(LineElement, PointElement, CategoryScale, LinearScale, Tooltip, Legend);
+import { Line } from "react-chartjs-2";
 
 ChartJS.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend);
 
@@ -16,7 +21,7 @@ const TableUser = () => {
   const [error, setError] = useState(null);
   const [selectedPatients, setSelectedPatients] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [patientsPerPage] = useState(8);
+  const [patientsPerPage] = useState(14);
 
   // Thống kê tổng quan
   const [totalProducts, setTotalProducts] = useState(0);
@@ -36,7 +41,6 @@ const TableUser = () => {
         const response = await axios.get("http://localhost:8080/api/medicines");
         setData(response.data);
         setFilteredData(response.data);
-
         // Cập nhật thống kê tổng quan
         const totalQuantity = response.data.reduce((sum, item) => sum + item.quantity, 0);
         const uniqueTypes = new Set(response.data.map((item) => item.medicineName)).size;
@@ -50,6 +54,7 @@ const TableUser = () => {
       } catch (error) {
         console.error("Chi tiết lỗi:", error);
         setError("Không thể tải dữ liệu từ API. Vui lòng kiểm tra lại.");
+        toast.error("Không thể tải dữ liệu từ API.");
       }
     };
     fetchData();
@@ -58,7 +63,9 @@ const TableUser = () => {
   const handleDelete = (medicineId) => {
     setData(data.filter((item) => item.medicineId !== medicineId));
     setFilteredData(filteredData.filter((item) => item.medicineId !== medicineId));
+    toast.success("Đã xóa thuốc thành công!");
   };
+  
 
   const handleFilterChange = (e, field) => {
     const { value } = e.target;
@@ -113,18 +120,37 @@ const TableUser = () => {
 
   // Biểu đồ thống kê
   const chartData = {
-    labels: filteredData.map((item) => item.medicineName),
+    labels: filteredData.map((item) => item.medicineName), // Xác định các nhãn trục X (Tên thuốc)
     datasets: [
       {
-        label: "Tỷ lệ thuốc",
-        data: filteredData.map((item) => item.quantity),
-        backgroundColor: filteredData.map(
-          (_, index) => `hsl(${(index * 360) / filteredData.length}, 70%, 50%)`
-        ),
-        borderWidth: 1,
+        label: "Số lượng thuốc", // Đặt tên cho dòng
+        data: filteredData.map((item) => item.quantity), // Dữ liệu cho trục Y (Số lượng thuốc)
+        fill: false, // Không tô màu dưới đường
+        borderColor: "rgba(75,192,192,1)", // Màu đường
+        tension: 0.1, // Làm mượt đường biểu đồ (tăng giá trị để tạo độ cong)
+        pointRadius: 5, // Tăng kích thước các điểm trên đường
       },
     ],
   };
+  const options = {
+    responsive: true,
+    scales: {
+      x: {
+        title: {
+          display: true,
+          text: "Tên thuốc",
+        },
+      },
+      y: {
+        title: {
+          display: true,
+          text: "Số lượng",
+        },
+      },
+    },
+  };
+  
+  
 
   return (
     <div className="datatable">
@@ -132,10 +158,9 @@ const TableUser = () => {
       <div className="dashboard">
         {/* Biểu đồ thống kê */}
         <div className="chartSection">
-          <h3>Biểu đồ thống kê tỷ lệ thuốc</h3>
-          <Pie data={chartData} options={{ responsive: true }} />
+          <h3>Biểu đồ thống kê số lượng thuốc</h3>
+          <Line data={chartData} options={{ responsive: true }} />
         </div>
-        
         {/* Phần Tổng quan */}
         <div className="summarySection">
           <div className="summaryItem">
@@ -172,7 +197,7 @@ const TableUser = () => {
       </div>
 
       {/* Nút In và Xuất Excel */}
-      <div className="actions">
+      <div className="actions1">
         <button onClick={handlePrint} className="printButton">
           In báo cáo
         </button>
@@ -204,7 +229,7 @@ const TableUser = () => {
                 <th>Mã số thuốc</th>
                 <th>Tên thuốc</th>
                 <th>Số lượng</th>
-                <th>Hình ảnh</th> {/* Thêm cột hình ảnh */}
+                <th>Loại thuốc</th> {/* Thêm cột hình ảnh */}
                 <th>Ngày sản xuất</th>
                 <th>Ngày hết hạn</th>
                 <th>Chi tiết</th>
@@ -224,13 +249,7 @@ const TableUser = () => {
                   <td>{row.medicineId}</td>
                   <td>{row.medicineName}</td>
                   <td>{row.quantity}</td>
-                  <td>
-                    <img
-                      src={`/avatar${row.medicineId}.png`}
-                      alt={row.medicineName}
-                      style={{ width: "50px", height: "50px", objectFit: "cover" }}
-                    />
-                  </td> {/* Hiển thị hình ảnh */}
+                  <td>{row.medicineType}</td>
                   <td>{row.entryDate}</td>
                   <td>{row.expDate}</td>
                   <td>
@@ -256,7 +275,7 @@ const TableUser = () => {
           onClick={() => paginate(currentPage - 1)}
           disabled={currentPage === 1}
         >
-          Trước
+          Trang trước
         </button>
         
         {/* Hiển thị số trang hiện tại trên tổng số trang */}
@@ -268,7 +287,7 @@ const TableUser = () => {
           onClick={() => paginate(currentPage + 1)}
           disabled={currentPage === pageNumbers.length}
         >
-          Sau
+          Trang sau
         </button>
       </div>
 

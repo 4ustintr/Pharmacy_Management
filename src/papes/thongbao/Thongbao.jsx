@@ -1,23 +1,19 @@
-import "./thongbao.scss";
-import Siderbar from "../../components/siderbar/Siderbar.jsx";
-import Navbar from "../../components/navbar/Navbar.jsx";
-import Datatable from "../../components/thongbao/NotificationTable .jsx";
+import "./thongbao.scss"
+import Siderbar from "../../components/siderbar/Siderbar.jsx"
+import Navbar from "../../components/navbar/Navbar.jsx"
+import Datatable from "../../components/thongbao/NotificationTable .jsx"
 
-const Thongbao = () => {
+const MedicineCabinet = () => {
+  
   return (
     <div className="list">
-      {/* Sidebar cố định */}
-      <Siderbar />
-      
+      <Siderbar/>
       <div className="listContainer">
-        {/* Navbar cố định */}
-        <Navbar />
-        
-        {/* Nội dung chính của trang */}
-        <Datatable />
+        <Navbar/>
+        <Datatable/>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Thongbao;
+export default MedicineCabinet;

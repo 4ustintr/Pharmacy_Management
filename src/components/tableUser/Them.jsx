@@ -44,6 +44,8 @@ const Them = ({ patient, onClose, onUpdate, onDelete }) => {
       toast.error(error.message);
     }
   };
+
+  // Thay đổi ảnh
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -109,17 +111,23 @@ const Them = ({ patient, onClose, onUpdate, onDelete }) => {
             <tr>
               <td>Ảnh thuốc:</td>
               <td>
-                  <img
-                    src={`/avatar.png`}// Hiển thị ảnh mặc định nếu không có ảnh
-                    alt="Medicine"
-                    style={{ width: "100px", height: "100px", objectFit: "cover" }}
-                  />
-                  <button 
-                      type="button" 
-                      onClick={() => document.getElementById(handleImageChange).click()}
-                    >
-                      Tải ảnh lên
-                    </button>
+                <img
+                  src={formData.imageUrl || `/avatar.png`} // Hiển thị ảnh từ formData nếu có, nếu không thì dùng ảnh mặc định
+                  alt="Medicine"
+                  style={{ width: "100px", height: "100px", objectFit: "cover" }}
+                />
+                <input
+                  type="file"
+                  id="image-upload"
+                  style={{ display: "none" }}
+                  onChange={handleImageChange}
+                />
+                <button 
+                  type="button" 
+                  onClick={() => document.getElementById('image-upload').click()}
+                >
+                  Tải ảnh lên
+                </button>
               </td>
             </tr>
           </tbody>

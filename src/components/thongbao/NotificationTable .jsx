@@ -3,6 +3,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./notificationTable.scss";
+import Them from "../tableUser/Them.jsx"
 
 const NotificationTable = () => {
   const [medications, setMedications] = useState([]);
@@ -10,6 +11,7 @@ const NotificationTable = () => {
   const [expiringSoonMedications, setExpiringSoonMedications] = useState([]);
   const [filteredMedications, setFilteredMedications] = useState([]);
   const [keyword, setKeyword] = useState("");
+  const [selectedPatient, setSelectedPatient] = useState(null);
 
   // Hàm kiểm tra thuốc hết hạn
   const isExpired = (expDate) => {
@@ -25,6 +27,11 @@ const NotificationTable = () => {
     const diffTime = expiry - today;
     const diffDays = diffTime / (1000 * 3600 * 24);
     return diffDays <= 30 && diffDays > 0;
+  };
+  const handleDelete = (medicineId) => {
+    setData(data.filter((item) => item.medicineId !== medicineId));
+    setFilteredData(filteredData.filter((item) => item.medicineId !== medicineId));
+    toast.success("Đã xóa thuốc thành công!");
   };
 
   // Lấy dữ liệu từ API
@@ -137,17 +144,22 @@ const NotificationTable = () => {
                     : "Sắp hết hạn"}
                 </td>
                 <td>
-                  <a
-                    href={`/medicineCabinet/${medication.id}`}
-                    className="actionButton"
-                  >
-                    Xử lý ngay
-                  </a>
+                <button
+                      className="viewButton"
+                      onClick={() => setSelectedPatient(medication)}
+                    >
+                      Chi tiết
+                    </button>
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
+        <Them
+        patient={selectedPatient}
+        onClose={() => setSelectedPatient(null)}
+        onDelete={handleDelete}
+      />
       </div>
     </div>
   );

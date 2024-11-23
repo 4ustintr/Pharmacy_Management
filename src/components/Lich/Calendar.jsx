@@ -7,9 +7,14 @@ import './Calendar.scss';
 const Calendar = () => {
   const [currentDate, setCurrentDate] = useState(dayjs());
   const [events, setEvents] = useState([
+    { date: dayjs().date(1).format('YYYY-MM-DD'), title: 'Ca làm sáng', shift: '06:00 - 12:00' },
     { date: dayjs().date(17).format('YYYY-MM-DD'), title: 'Ca làm sáng', shift: '06:00 - 12:00' },
     { date: dayjs().date(26).format('YYYY-MM-DD'), title: 'Ca làm chiều', shift: '12:00 - 18:00' },
     { date: dayjs().date(29).format('YYYY-MM-DD'), title: 'Ca làm tối', shift: '18:00 - 00:00' },
+    { date: dayjs().date(5).format('YYYY-MM-DD'), title: 'Ca làm tối', shift: '18:00 - 00:00' },
+    { date: dayjs().date(14).format('YYYY-MM-DD'), title: 'Ca làm tối', shift: '18:00 - 00:00' },
+    { date: dayjs().date(20).format('YYYY-MM-DD'), title: 'Ca làm chiều', shift: '18:00 - 00:00' },
+    { date: dayjs().date(30).format('YYYY-MM-DD'), title: 'Ca làm tối', shift: '18:00 - 00:00' },
   ]);
 
   useEffect(() => {
