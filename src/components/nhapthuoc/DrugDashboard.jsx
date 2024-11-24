@@ -57,6 +57,19 @@ const DrugDashboard = () => {
     };
     fetchMedicines();
   }, []);
+  // Hàm xóa thuốc
+  const handleDelete = async (contributionId) => {
+    try {
+      await axios.delete(`http://localhost:8080/api/contributions/${contributionId}`);
+      setMedicineList((prev) => prev.filter(medicine => medicine.contributionId !== contributionId));
+      toast.success("Xóa thuốc thành công!");
+      setSelectedMedicine(null);  // Đóng modal sau khi xóa
+    } catch (error) {
+      console.error("Error deleting medicine:", error);
+      toast.error("Lỗi khi xóa thuốc.");
+    }
+  };
+
   
 
   // Cập nhật form nhập thuốc
@@ -90,6 +103,7 @@ const DrugDashboard = () => {
       toast.error("Lỗi khi lưu thuốc.");
     }
   };
+  
 
   // Xử lý phân trang
   const indexOfLastMedicine = currentPage * medicinesPerPage;
@@ -104,6 +118,7 @@ const DrugDashboard = () => {
   const totalPages = Math.ceil(filteredMedicines.length / medicinesPerPage);
 
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
+  
 
   // Dữ liệu biểu đồ cột
   const barChartData = {
@@ -346,6 +361,7 @@ const DrugDashboard = () => {
             <p><strong>Ngày nhập:</strong> {selectedMedicine.entryDate || "Chưa rõ"}</p>
             <p><strong>Ghi chú:</strong> {selectedMedicine.notes || "Không có ghi chú"}</p>
             <button onClick={() => setSelectedMedicine(null)}>Đóng</button>
+            <button onClick={() => handleDelete(selectedMedicine.contributionId)}>Xóa</button>
           </div>
         </div>
       )}

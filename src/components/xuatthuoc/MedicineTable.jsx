@@ -11,6 +11,56 @@ const MedicineTable = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const medicinesPerPage = 14;
 
+
+
+const [newMedicine, setNewMedicine] = useState({
+  patientName: "",
+  patientPhone: "",
+  medicineName: "",
+  medicineType: "",
+  quantityDetails: "",
+  dateOfTrans: "",
+});
+
+const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+
+// Hàm để mở modal thêm đơn xuất thuốc
+const handleAddMedicine = () => {
+  setIsAddModalOpen(true);
+};
+
+// Hàm xử lý thay đổi trong form nhập liệu
+const handleInputChange = (e) => {
+  const { name, value } = e.target;
+  setNewMedicine((prev) => ({
+    ...prev,
+    [name]: value,
+  }));
+};
+
+// Hàm gửi yêu cầu POST để thêm đơn thuốc mới
+const handleAddNewMedicine = () => {
+  axios
+    .post("http://localhost:8080/api/invoice-details", newMedicine)
+    .then((response) => {
+      toast.success("Thêm đơn thuốc thành công!");
+      // Cập nhật lại danh sách thuốc sau khi thêm
+      setMedicines((prevMedicines) => [...prevMedicines, response.data]);
+      setIsAddModalOpen(false); // Đóng modal sau khi thêm
+      setNewMedicine({
+        patientName: "",
+        patientPhone: "",
+        medicineName: "",
+        medicineType: "",
+        quantityDetails: "",
+        dateOfTrans: "",
+      }); // Reset form
+    })
+    .catch(() => {
+      toast.error("Lỗi khi thêm đơn thuốc!");
+    });
+};
+
   // Fetch dữ liệu từ API
   useEffect(() => {
     axios
@@ -43,6 +93,44 @@ const filteredMedicines = medicines.filter((medicine) => {
     invoiceDetailsId.includes(searchTerm) || patientName.includes(searchTerm)
   );
 });
+
+
+const handleEdit = (medicine) => {
+  // Mở form sửa và điền dữ liệu ban đầu
+  setSelectedMedicine(medicine);
+};
+
+// Hàm để xử lý gửi thông tin đã sửa lên API
+const handleUpdate = () => {
+  if (selectedMedicine) {
+    axios
+      .put(`http://localhost:8080/api/invoice-details/${selectedMedicine.invoiceDetailsId}`, selectedMedicine)
+      .then((response) => {
+        toast.success("Cập nhật thành công!");
+        // Cập nhật lại danh sách thuốc sau khi sửa
+        setMedicines((prevMedicines) =>
+          prevMedicines.map((item) =>
+            item.invoiceDetailsId === selectedMedicine.invoiceDetailsId
+              ? selectedMedicine
+              : item
+          )
+        );
+        setSelectedMedicine(null); // Đóng modal sau khi cập nhật
+      })
+      .catch(() => {
+        toast.error("Lỗi khi cập nhật!");
+      });
+  }
+};
+
+// Các phương thức để cập nhật dữ liệu trong form (ví dụ: khi thay đổi tên bệnh nhân)
+const handleChange = (e) => {
+  const { name, value } = e.target;
+  setSelectedMedicine((prev) => ({
+    ...prev,
+    [name]: value,
+  }));
+};
 
 
   // Phân trang
@@ -100,8 +188,10 @@ const filteredMedicines = medicines.filter((medicine) => {
           placeholder="Tìm theo ID hoặc tên bệnh nhân..."
           onChange={handleSearch}
         />
-      </div>
+        <button className="button" onClick={handleAddMedicine}>Thêm đơn xuất thuốc</button>
 
+      </div>
+      
       {/* Bảng danh sách thuốc */}
       <div className="medicine-table">
         <h3>Danh sách xuất thuốc</h3>
@@ -140,6 +230,78 @@ const filteredMedicines = medicines.filter((medicine) => {
         </table>
       </div>
 
+
+      {/* Modal thêm đơn thuốc */}
+      {isAddModalOpen && (
+        <div className="modal">
+          <div className="modal-content">
+            <h2>Thêm đơn xuất thuốc</h2>
+            <div className="modal-info">
+              <p>
+                <strong>Bệnh nhân:</strong>
+                <input
+                  type="text"
+                  name="patientName"
+                  value={newMedicine.patientName}
+                  onChange={handleInputChange}
+                />
+              </p>
+              <p>
+                <strong>SĐT:</strong>
+                <input
+                  type="text"
+                  name="patientPhone"
+                  value={newMedicine.patientPhone}
+                  onChange={handleInputChange}
+                />
+              </p>
+              <p>
+                <strong>Thuốc:</strong>
+                <input
+                  type="text"
+                  name="medicineName"
+                  value={newMedicine.medicineName}
+                  onChange={handleInputChange}
+                />
+              </p>
+              <p>
+                <strong>Loại thuốc:</strong>
+                <input
+                  type="text"
+                  name="medicineType"
+                  value={newMedicine.medicineType}
+                  onChange={handleInputChange}
+                />
+              </p>
+              <p>
+                <strong>Số lượng:</strong>
+                <input
+                  type="number"
+                  name="quantityDetails"
+                  value={newMedicine.quantityDetails}
+                  onChange={handleInputChange}
+                />
+              </p>
+              <p>
+                <strong>Ngày giao dịch:</strong>
+                <input
+                  type="date"
+                  name="dateOfTrans"
+                  value={newMedicine.dateOfTrans}
+                  onChange={handleInputChange}
+                />
+              </p>
+            </div>
+            <div className="modal-actions">
+              <button className="save-btn" onClick={handleAddNewMedicine}>
+                Thêm
+              </button>
+              <button onClick={() => setIsAddModalOpen(false)}>Đóng</button>
+            </div>
+          </div>
+        </div>
+      )}
+
       
       {/* Phân trang */}
       <div className="pagination">
@@ -161,38 +323,85 @@ const filteredMedicines = medicines.filter((medicine) => {
       </div>
 
 
-      {/* Modal chi tiết */}
       {selectedMedicine && (
-        <div className="modal">
-          <div className="modal-content">
-            <h2>Thông tin chi tiết</h2>
-            <div className="modal-info">
-              <p><strong>ID:</strong> {selectedMedicine?.invoiceDetailsId || "N/A"}</p>
-              <p><strong>Bệnh nhân:</strong> {selectedMedicine?.patientName || "Chưa có tên"}</p>
-              <p><strong>SĐT:</strong> {selectedMedicine?.patientPhone || "Chưa có số điện thoại"}</p>
-              <p><strong>Thuốc:</strong> {selectedMedicine?.medicineName || "Chưa có thuốc"}</p>
-              <p><strong>Loại:</strong> {selectedMedicine?.medicineType || "Chưa có loại thuốc"}</p>
-              <p><strong>Số lượng:</strong> {selectedMedicine?.quantityDetails || "Chưa có số lượng"}</p>
-              <p><strong>Ngày giao dịch:</strong> {selectedMedicine?.dateOfTrans || "Chưa có ngày"}</p>
-            </div>
-            <div className="modal-actions">
-              <button
-                className="delete-btn"
-                onClick={() => handleDelete(selectedMedicine.invoiceDetailsId)}
-              >
-                Xóa
-              </button>
-              <button
-                className="edit-btn"
-                onClick={() => handleEdit(selectedMedicine)}
-              >
-                Sửa
-              </button>
-              <button onClick={() => setSelectedMedicine(null)}>Đóng</button>
-            </div>
-          </div>
-        </div>
-      )}
+  <div className="modal">
+    <div className="modal-content">
+      <h2>Thông tin chi tiết</h2>
+      <div className="modal-info">
+        <p>
+          <strong>ID:</strong>
+          {selectedMedicine?.invoiceDetailsId || "N/A"}
+        </p>
+        <p>
+          <strong>Bệnh nhân:</strong>
+          <input
+            type="text"
+            name="patientName"
+            value={selectedMedicine?.patientName || ""}
+            onChange={handleChange}
+          />
+        </p>
+        <p>
+          <strong>SĐT:</strong>
+          <input
+            type="text"
+            name="patientPhone"
+            value={selectedMedicine?.patientPhone || ""}
+            onChange={handleChange}
+          />
+        </p>
+        <p>
+          <strong>Thuốc:</strong>
+          <input
+            type="text"
+            name="medicineName"
+            value={selectedMedicine?.medicineName || ""}
+            onChange={handleChange}
+          />
+        </p>
+        <p>
+          <strong>Loại:</strong>
+          <input
+            type="text"
+            name="medicineType"
+            value={selectedMedicine?.medicineType || ""}
+            onChange={handleChange}
+          />
+        </p>
+        <p>
+          <strong>Số lượng:</strong>
+          <input
+            type="number"
+            name="quantityDetails"
+            value={selectedMedicine?.quantityDetails || ""}
+            onChange={handleChange}
+          />
+        </p>
+        <p>
+          <strong>Ngày giao dịch:</strong>
+          <input
+            type="date"
+            name="dateOfTrans"
+            value={selectedMedicine?.dateOfTrans || ""}
+            onChange={handleChange}
+          />
+        </p>
+      </div>
+      <div className="modal-actions">
+        <button
+          className="delete-btn"
+          onClick={() => handleDelete(selectedMedicine.invoiceDetailsId)}
+        >
+          Xóa
+        </button>
+        <button className="edit-btn" onClick={handleUpdate}>
+          Cập nhật
+        </button>
+        <button onClick={() => setSelectedMedicine(null)}>Đóng</button>
+      </div>
+    </div>
+  </div>
+)}
 
     </div>
   );
