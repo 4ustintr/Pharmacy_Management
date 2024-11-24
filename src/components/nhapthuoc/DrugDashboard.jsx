@@ -45,14 +45,19 @@ const DrugDashboard = () => {
     const fetchMedicines = async () => {
       try {
         const response = await axios.get("http://localhost:8080/api/contributions");
-        setMedicineList(response.data);
+        if (Array.isArray(response.data)) {
+          setMedicineList(response.data);
+        } else {
+          throw new Error("Dữ liệu không hợp lệ");
+        }
       } catch (error) {
         console.error("Error fetching medicines:", error);
-        toast.error("Lỗi khi tải danh sách thuốc."); 
+        toast.error("Lỗi khi tải danh sách thuốc.");
       }
     };
     fetchMedicines();
   }, []);
+  
 
   // Cập nhật form nhập thuốc
   const handleFormChange = (e) => {
@@ -68,16 +73,15 @@ const DrugDashboard = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post("http://localhost:8080/api/medicines", formData);
+      const response = await axios.post("http://localhost:8080/api/contributions", formData);
       console.log("Data posted successfully:", response.data);
       setMedicineList((prev) => [...prev, response.data]); 
       setFormData({
-        medicineId:"",
         medicineName: "",
         medicineType: "",
-        entryDate: "",
-        expDate: "",
-        quantity: "",
+        supplierName: "",
+        supplierPhone: "",
+        quantityContribution: "",
       });
       setShowForm(false);
       toast.success("Lưu thuốc thành công!"); 
@@ -90,10 +94,11 @@ const DrugDashboard = () => {
   // Xử lý phân trang
   const indexOfLastMedicine = currentPage * medicinesPerPage;
   const indexOfFirstMedicine = indexOfLastMedicine - medicinesPerPage;
-  const filteredMedicines = medicineList.filter(medicine =>
-    medicine.medicineName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    medicine.contributionId.toString().includes(searchQuery)
+  const filteredMedicines = (medicineList || []).filter(medicine =>
+    (medicine.medicineName && medicine.medicineName.toLowerCase().includes(searchQuery.toLowerCase())) ||
+    (medicine.contributionId && medicine.contributionId.toString().includes(searchQuery))
   );
+  
   const currentMedicines = filteredMedicines.slice(indexOfFirstMedicine, indexOfLastMedicine);
 
   const totalPages = Math.ceil(filteredMedicines.length / medicinesPerPage);
@@ -272,16 +277,6 @@ const DrugDashboard = () => {
           <form className="drugForm" onSubmit={handleSubmit}>
             <h3>Nhập thuốc</h3>
             <label>
-              Mã ID thuốc:
-              <input
-                type="number"
-                name="medicineId"
-                value={formData.medicineId}
-                onChange={handleFormChange}
-                required
-              />
-            </label>
-            <label>
               Tên thuốc:
               <input
                 type="text"
@@ -302,21 +297,21 @@ const DrugDashboard = () => {
               />
             </label>
             <label>
-              Ngày nhập thuốc:
+              Nhà cung cấp:
               <input
-                type="date"
-                name="entryDate"
-                value={formData.entryDate}
+                type="text"
+                name="supplierName"
+                value={formData.supplierName}
                 onChange={handleFormChange}
                 required
               />
             </label>
             <label>
-              Ngày hết hạn:
+              Số điện thoại:
               <input
-                type="date"
-                name="expDate"
-                value={formData.expDate}
+                type="text"
+                name="supplierPhone"
+                value={formData.supplierPhone}
                 onChange={handleFormChange}
                 required
               />
@@ -325,8 +320,8 @@ const DrugDashboard = () => {
               Số lượng thuốc:
               <input
                 type="number"
-                name="quantity"
-                value={formData.quantity}
+                name="quantityContribution"
+                value={formData.quantityContribution}
                 onChange={handleFormChange}
                 required
               />

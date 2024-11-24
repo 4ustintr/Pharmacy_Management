@@ -1,4 +1,3 @@
-import "./datatable.scss";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import PatientInfoModal from "./PatientInfoModal.jsx";
@@ -17,13 +16,21 @@ const Datatable = () => {
   const [error, setError] = useState(null);
   const [selectedPatients, setSelectedPatients] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [patientsPerPage] = useState(16); // Số bệnh nhân hiển thị trên mỗi trang
+  const [patientsPerPage] = useState(16);
+  const [showAddPatientModal, setShowAddPatientModal] = useState(false);
+  const [newPatient, setNewPatient] = useState({
+    patientId: "",
+    patientName: "",
+    gender: "",
+    patientAddress: "",
+    patientPhone: "",
+  });
 
   // Gọi API để lấy dữ liệu
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("http://localhost:8080/api/patient");
+        const response = await axios.get("http://localhost:8080/api/patients");
         setData(response.data);
         setFilteredData(response.data);
       } catch (error) {
@@ -57,7 +64,6 @@ const Datatable = () => {
       setFilteredData(filtered);
     }
   };
-  
 
   const handleUpdate = (updatedPatient) => {
     setData((prevData) =>
@@ -65,6 +71,24 @@ const Datatable = () => {
         patient.patientId === updatedPatient.patientId ? updatedPatient : patient
       )
     );
+  };
+
+  const handleAddPatient = async () => {
+    try {
+      const response = await axios.post("http://localhost:8080/api/patients", newPatient);
+      setData([...data, response.data]);
+      setFilteredData([...filteredData, response.data]);
+      setShowAddPatientModal(false); // Đóng modal sau khi thêm
+      setNewPatient({
+        patientId: "",
+        patientName: "",
+        gender: "",
+        patientAddress: "",
+        patientPhone: "",
+      });
+    } catch (error) {
+      console.error("Lỗi khi thêm bệnh nhân:", error);
+    }
   };
 
   const handleCheckboxChange = (patientId) => {
@@ -117,12 +141,12 @@ const Datatable = () => {
           />
         </div>
 
-        {/* Nút in và xuất Excel */}
+        {/* Nút Thêm bệnh nhân */}
         <div className="actions">
+          <button onClick={() => setShowAddPatientModal(true)} className="addButton">Thêm bệnh nhân</button>
           <button onClick={handlePrint} className="printButton">In báo cáo</button>
           <button onClick={handleExportToExcel} className="exportButton">Xuất Excel</button>
         </div>
-        
       </div>
 
       <div className="tableSection">
@@ -188,6 +212,49 @@ const Datatable = () => {
         onUpdate={handleUpdate}
         onDelete={handleDelete}
       />
+
+      {/* Modal Thêm Bệnh nhân */}
+      {showAddPatientModal && (
+        <div className="modal">
+          <div className="modalContent">
+            <h3>Thêm Bệnh nhân</h3>
+            <form>
+              <input
+                type="text"
+                placeholder="Mã bệnh nhân"
+                value={newPatient.patientId}
+                onChange={(e) => setNewPatient({ ...newPatient, patientId: e.target.value })}
+              />
+              <input
+                type="text"
+                placeholder="Họ và tên"
+                value={newPatient.patientName}
+                onChange={(e) => setNewPatient({ ...newPatient, patientName: e.target.value })}
+              />
+              <input
+                type="text"
+                placeholder="Giới tính"
+                value={newPatient.gender}
+                onChange={(e) => setNewPatient({ ...newPatient, gender: e.target.value })}
+              />
+              <input
+                type="text"
+                placeholder="Địa chỉ"
+                value={newPatient.patientAddress}
+                onChange={(e) => setNewPatient({ ...newPatient, patientAddress: e.target.value })}
+              />
+              <input
+                type="text"
+                placeholder="Số điện thoại"
+                value={newPatient.patientPhone}
+                onChange={(e) => setNewPatient({ ...newPatient, patientPhone: e.target.value })}
+              />
+              <button type="button" onClick={handleAddPatient}>Thêm</button>
+              <button type="button" onClick={() => setShowAddPatientModal(false)}>Hủy</button>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

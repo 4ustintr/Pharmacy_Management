@@ -14,6 +14,8 @@ import { Line } from "react-chartjs-2";
 ChartJS.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend);
 
 const TableUser = () => {
+  const [medicineList, setMedicineList] = useState([]);
+  const [patients, setPatients] = useState([]);
   const [data, setData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
   const [selectedPatient, setSelectedPatient] = useState(null);
@@ -33,6 +35,42 @@ const TableUser = () => {
     "public/avatar.jpg",
   
   ];
+  const [showForm, setShowForm] = useState(false);
+  const [formData, setFormData] = useState({
+    medicineName: "",
+    medicineType: "",
+    supplierName: "",
+    supplierPhone: "",
+    quantityContribution: "",});
+
+  const handleFormChange = (e) => {
+      const { name, value } = e.target;
+      setFormData((prevFormData) => ({
+        ...prevFormData,
+        [name]: value,
+      }));
+    };
+  // Gửi dữ liệu thuốc mới qua API POST
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await axios.post("http://localhost:8080/api/medicines", formData);
+      console.log("Data posted successfully:", response.data);
+      setMedicineList((prev) => [...prev, response.data]); 
+      setFormData({
+        medicineName: "",
+        medicineType: "",
+        entryDate: "",
+        expDate: "",
+        quantity: "",
+      });
+      setShowForm(false);
+      toast.success("Lưu thuốc thành công!"); 
+    } catch (error) {
+      console.error("Error posting data:", error);
+      toast.error("Lỗi khi lưu thuốc.");
+    }
+  };
 
   // Gọi API để lấy dữ liệu
   useEffect(() => {
@@ -110,7 +148,7 @@ const TableUser = () => {
   const indexOfLastPatient = currentPage * patientsPerPage;
   const indexOfFirstPatient = indexOfLastPatient - patientsPerPage;
   const currentPatients = filteredData.slice(indexOfFirstPatient, indexOfLastPatient);
-
+  
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
   const pageNumbers = [];
@@ -149,9 +187,76 @@ const TableUser = () => {
       },
     },
   };
+  const handleSave = async () => {
+    console.log("Dữ liệu gửi đi:", formData); // Debug
   
+    try {
+      // Gọi API để cập nhật dữ liệu
+      const response = await fetch(`http://localhost:8080/api/medicines/${formData.medicineId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
   
-
+      // Log trạng thái API và nội dung trả về để kiểm tra
+      console.log("Trạng thái API:", response.status);
+  
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("Phản hồi API:", errorText);
+        throw new Error("Cập nhật thất bại!"); // Ném lỗi nếu API không trả về OK
+      }
+  
+      const updatedData = await response.json();
+      console.log("Cập nhật thành công:", updatedData);
+  
+      // Gọi callback cập nhật danh sách ở cấp cha (onUpdate và onRefresh)
+      onUpdate(updatedData); // Cập nhật dữ liệu trong danh sách hiện tại
+      if (onRefresh) onRefresh(); // Làm mới toàn bộ danh sách nếu cần
+  
+      // Thoát chế độ chỉnh sửa và thông báo thành công
+      setIsEditing(false);
+      toast.success("Cập nhật thành công!");
+    } catch (error) {
+      // Thông báo lỗi khi có lỗi xảy ra
+      console.error(error);
+      toast.error("Có lỗi xảy ra: " + error.message);
+    }
+  };
+  const handleUpdate = (updatedPatient) => {
+    // Cập nhật lại danh sách bệnh nhân (hoặc thuốc) sau khi sửa
+    setPatients((prevPatients) =>
+      prevPatients.map((patient) =>
+        patient.medicineId === updatedPatient.medicineId
+          ? updatedPatient
+          : patient
+      )
+    );
+  
+    // Cập nhật lại dữ liệu lọc nếu cần
+    setFilteredData((prevData) =>
+      prevData.map((item) =>
+        item.medicineId === updatedPatient.medicineId
+          ? updatedPatient
+          : item
+      )
+    );
+  
+    toast.success("Cập nhật thành công!");
+  };
+  const fetchAllMedicines = async () => {
+    try {
+      const response = await fetch("http://localhost:8080/api/medicines");
+      const data = await response.json();
+      setData(data); // Update with setData instead of setMedicines
+    } catch (error) {
+      console.error("Không thể tải danh sách thuốc:", error);
+      toast.error("Không thể tải danh sách thuốc!");
+    }
+  };
+  
   return (
     <div className="datatable">
       <h2>Tủ thuốc</h2>
@@ -204,7 +309,13 @@ const TableUser = () => {
         <button onClick={handleExportToExcel} className="exportButton">
           Xuất Excel
         </button>
+        <button className="addButton" onClick={() => setShowForm(true)}>
+          Nhập thuốc
+      </button>
       </div>
+      
+
+      
 
       
       {/* Hiển thị bảng dữ liệu */}
@@ -268,6 +379,69 @@ const TableUser = () => {
       )}
       </div>
 
+      {/* Form nhập thuốc */}
+      {showForm && (
+        <div className="formOverlay">
+          <form className="drugForm" onSubmit={handleSubmit}>
+            <h3>Nhập thuốc</h3>
+            <label>
+              Tên thuốc:
+              <input
+                type="text"
+                name="medicineName"
+                value={formData.medicineName}
+                onChange={handleFormChange}
+                required
+              />
+            </label>
+            <label>
+              Loại thuốc:
+              <input
+                type="text"
+                name="medicineType"
+                value={formData.medicineType}
+                onChange={handleFormChange}
+                required
+              />
+            </label>
+            <label>
+              Ngày nhập thuốc:
+              <input
+                type="date"
+                name="entryDate"
+                value={formData.entryDate}
+                onChange={handleFormChange}
+                required
+              />
+            </label>
+            <label>
+              Ngày hết hạn:
+              <input
+                type="date"
+                name="expDate"
+                value={formData.expDate}
+                onChange={handleFormChange}
+                required
+              />
+            </label>
+            <label>
+              Số lượng thuốc:
+              <input
+                type="number"
+                name="quantity"
+                value={formData.quantity}
+                onChange={handleFormChange}
+                required
+              />
+            </label>
+            <button type="submit">Nhập</button>
+            <button type="button" onClick={() => setShowForm(false)}>
+              Hủy
+            </button>
+          </form>
+        </div>
+      )}
+
        
         {/* Phân trang */}
       <div className="pagination">
@@ -290,15 +464,14 @@ const TableUser = () => {
           Trang sau
         </button>
       </div>
-
-        
         {/* Hiển thị chi tiết */}
-      <Them
-        patient={selectedPatient}
-        onClose={() => setSelectedPatient(null)}
-        onDelete={handleDelete}
-      />
-
+        <Them
+          patient={selectedPatient}
+          onClose={() => setSelectedPatient(null)}
+          onUpdate={handleUpdate} // Truyền callback cập nhật
+          onDelete={handleDelete} // Callback xóa
+          onRefresh={fetchAllMedicines}
+        />
     </div>
   );
 };

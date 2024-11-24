@@ -23,7 +23,7 @@ const PatientInfoModal = ({ patient, onClose, onUpdate, onDelete }) => {
 
   const handleSave = async () => {
     try {
-      const response = await fetch(`http://localhost:8080/api/patients${updatedPatient.patientId}`, {
+      const response = await fetch(`http://localhost:8080/api/patients/${updatedPatient.patientId}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

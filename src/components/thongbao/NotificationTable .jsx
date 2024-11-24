@@ -4,6 +4,7 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./notificationTable.scss";
 import Them from "../tableUser/Them.jsx"
+import { Link } from "react-router-dom";
 
 const NotificationTable = () => {
   const [medications, setMedications] = useState([]);
@@ -144,12 +145,9 @@ const NotificationTable = () => {
                     : "Sắp hết hạn"}
                 </td>
                 <td>
-                <button
-                      className="viewButton"
-                      onClick={() => setSelectedPatient(medication)}
-                    >
-                      Chi tiết
-                    </button>
+                <Link to={`/khothuoc/`}>
+                <button className="viewButton">Chi tiết</button>
+              </Link>
                 </td>
               </tr>
             ))}

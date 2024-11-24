@@ -1,9 +1,9 @@
 import "./tableUser.scss";
 import "./them.scss";
 import { useState, useEffect } from "react";
-import { toast } from "react-toastify"; // Import thư viện thông báo
+import { toast } from "react-toastify";
 
-const Them = ({ patient, onClose, onUpdate, onDelete }) => {
+const Them = ({ patient, onClose, onUpdate, onDelete, onRefresh }) => {
   if (!patient) return null; // Không hiển thị nếu không có dữ liệu
 
   const [formData, setFormData] = useState({ ...patient });
@@ -25,26 +25,43 @@ const Them = ({ patient, onClose, onUpdate, onDelete }) => {
 
   // Lưu thay đổi
   const handleSave = async () => {
+    console.log("Dữ liệu gửi đi:", formData); // Debug
+  
     try {
-      const response = await fetch(`/api/medicines/${formData.medicineId}`, {
+      // Gọi API để cập nhật dữ liệu
+      const response = await fetch(`http://localhost:8080/api/medicines/${formData.medicineId}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(formData),
       });
-
-      if (!response.ok) throw new Error("Cập nhật thất bại!");
-
+  
+      // Log trạng thái API và nội dung trả về để kiểm tra
+      console.log("Trạng thái API:", response.status);
+  
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("Phản hồi API:", errorText);
+        throw new Error("Cập nhật thất bại!"); // Ném lỗi nếu API không trả về OK
+      }
+  
       const updatedData = await response.json();
-      onUpdate(updatedData); // Cập nhật dữ liệu lên cấp cha
-      setIsEditing(false); // Thoát chế độ chỉnh sửa
+      console.log("Cập nhật thành công:", updatedData);
+  
+      // Gọi callback cập nhật danh sách ở cấp cha (onUpdate và onRefresh)
+      onUpdate(updatedData); // Cập nhật dữ liệu trong danh sách hiện tại
+      if (onRefresh) onRefresh(); // Làm mới toàn bộ danh sách nếu cần
+  
+      // Thoát chế độ chỉnh sửa và thông báo thành công
+      setIsEditing(false);
       toast.success("Cập nhật thành công!");
     } catch (error) {
-      toast.error(error.message);
+      // Thông báo lỗi khi có lỗi xảy ra
+      console.error(error);
+      toast.error("Có lỗi xảy ra: " + error.message);
     }
   };
-
   // Thay đổi ảnh
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -65,7 +82,7 @@ const Them = ({ patient, onClose, onUpdate, onDelete }) => {
     if (!window.confirm("Bạn có chắc chắn muốn xóa thuốc này không?")) return;
 
     try {
-      const response = await fetch(`/api/medicines/${patient.medicineId}`, {
+      const response = await fetch(`http://localhost:8080/api/medicines/${patient.medicineId}`, {
         method: "DELETE",
       });
 
@@ -75,7 +92,7 @@ const Them = ({ patient, onClose, onUpdate, onDelete }) => {
       onClose(); // Đóng modal
       toast.success("Xóa thành công!");
     } catch (error) {
-      toast.error(error.message);
+      toast.error("Có lỗi xảy ra: " + error.message);
     }
   };
 
@@ -87,7 +104,6 @@ const Them = ({ patient, onClose, onUpdate, onDelete }) => {
           <tbody>
             {[
               { label: "Tên thuốc", key: "medicineName", type: "text" },
-              { label: "Mã thuốc", key: "medicineId", type: "text" },
               { label: "Số lượng", key: "quantity", type: "number" },
               { label: "Ngày sản xuất", key: "entryDate", type: "date" },
               { label: "Ngày hết hạn", key: "expDate", type: "date" },
@@ -112,22 +128,26 @@ const Them = ({ patient, onClose, onUpdate, onDelete }) => {
               <td>Ảnh thuốc:</td>
               <td>
                 <img
-                  src={formData.imageUrl || `/avatar.png`} // Hiển thị ảnh từ formData nếu có, nếu không thì dùng ảnh mặc định
+                  src={`/public/avatar${patient.patientId}.png`} // Ảnh từ formData nếu có, nếu không dùng ảnh mặc định
                   alt="Medicine"
                   style={{ width: "100px", height: "100px", objectFit: "cover" }}
                 />
-                <input
-                  type="file"
-                  id="image-upload"
-                  style={{ display: "none" }}
-                  onChange={handleImageChange}
-                />
-                <button 
-                  type="button" 
-                  onClick={() => document.getElementById('image-upload').click()}
-                >
-                  Tải ảnh lên
-                </button>
+                {isEditing && (
+                  <div>
+                    <input
+                      type="file"
+                      id="image-upload"
+                      style={{ display: "none" }}
+                      onChange={handleImageChange}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => document.getElementById("image-upload").click()}
+                    >
+                      Tải ảnh lên
+                    </button>
+                  </div>
+                )}
               </td>
             </tr>
           </tbody>

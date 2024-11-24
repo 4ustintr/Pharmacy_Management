@@ -32,6 +32,7 @@ ChartJS.register(
 );
 
 const DrugDashboard = () => {
+  const [patients, setPatients] = useState([]);
   const [medicineList, setMedicineList] = useState([]);
   const [filter, setFilter] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
@@ -95,7 +96,28 @@ const DrugDashboard = () => {
     setFilteredData(filteredData.filter((item) => item.medicineId !== medicineId));
     toast.success("Đã xóa thuốc thành công!");
   };
-
+  const handleUpdate = (updatedMedicine) => {
+    // Cập nhật thông tin thuốc trong danh sách
+    setData((prevData) =>
+      prevData.map((item) =>
+        item.medicineId === updatedMedicine.medicineId
+          ? { ...item, ...updatedMedicine } // Cập nhật thông tin thuốc
+          : item
+      )
+    );
+  
+    setFilteredData((prevFilteredData) =>
+      prevFilteredData.map((item) =>
+        item.medicineId === updatedMedicine.medicineId
+          ? { ...item, ...updatedMedicine } // Cập nhật thông tin thuốc trong filteredData
+          : item
+      )
+    );
+  
+    // Thông báo thành công
+    toast.success("Thông tin thuốc đã được cập nhật!");
+  };
+  
   const pieChartData = {
     labels: ["Hết hạn", "Sắp hết hạn", "Còn hạn"],
     datasets: [
@@ -109,6 +131,7 @@ const DrugDashboard = () => {
       },
     ],
   };
+  
 
   const pieChartOptions = {
     responsive: true,
@@ -247,9 +270,10 @@ const DrugDashboard = () => {
           </tbody>
         </table>
         <Them
-        patient={selectedPatient}
+        patient={selectedPatient }
         onClose={() => setSelectedPatient(null)}
         onDelete={handleDelete}
+        onUpdate={handleUpdate}
       />
       </div>
 
