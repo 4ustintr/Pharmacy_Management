@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import "./widget.scss";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import ShoppingCartOutlinedIcon from "@mui/icons-material/ShoppingCartOutlined";
-import MonetizationOnOutlinedIcon from "@mui/icons-material/MonetizationOnOutlined";
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import MedicationLiquidIcon from '@mui/icons-material/MedicationLiquid';
 import CountUp from 'react-countup'; // Import thư viện countup

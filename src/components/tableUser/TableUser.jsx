@@ -381,66 +381,81 @@ const TableUser = () => {
 
       {/* Form nhập thuốc */}
       {showForm && (
-        <div className="formOverlay">
-          <form className="drugForm" onSubmit={handleSubmit}>
-            <h3>Nhập thuốc</h3>
-            <label>
-              Tên thuốc:
-              <input
-                type="text"
-                name="medicineName"
-                value={formData.medicineName}
-                onChange={handleFormChange}
-                required
-              />
-            </label>
-            <label>
-              Loại thuốc:
-              <input
-                type="text"
-                name="medicineType"
-                value={formData.medicineType}
-                onChange={handleFormChange}
-                required
-              />
-            </label>
-            <label>
-              Ngày nhập thuốc:
-              <input
-                type="date"
-                name="entryDate"
-                value={formData.entryDate}
-                onChange={handleFormChange}
-                required
-              />
-            </label>
-            <label>
-              Ngày hết hạn:
-              <input
-                type="date"
-                name="expDate"
-                value={formData.expDate}
-                onChange={handleFormChange}
-                required
-              />
-            </label>
-            <label>
-              Số lượng thuốc:
-              <input
-                type="number"
-                name="quantity"
-                value={formData.quantity}
-                onChange={handleFormChange}
-                required
-              />
-            </label>
-            <button type="submit">Nhập</button>
-            <button type="button" onClick={() => setShowForm(false)}>
-              Hủy
-            </button>
-          </form>
-        </div>
-      )}
+  <div className="formOverlay">
+    <form className="drugForm" onSubmit={handleSubmit}>
+      <h3>Nhập thuốc</h3>
+      
+      <label>
+        Tên thuốc:
+        <input
+          type="text"
+          name="medicineName"
+          value={formData.medicineName}
+          onChange={handleFormChange}
+          required
+          pattern="^[a-zA-Z\s]+$" // Chỉ cho phép chữ cái và khoảng trắng
+          title="Tên thuốc chỉ được chứa chữ cái và khoảng trắng, không được chứa số"
+        />
+      </label>
+      
+      <label>
+        Loại thuốc:
+        <input
+          type="text"
+          name="medicineType"
+          value={formData.medicineType}
+          onChange={handleFormChange}
+          required
+          pattern="^[a-zA-Z\s]+$" // Chỉ cho phép chữ cái và khoảng trắng
+          title="Loại thuốc chỉ được chứa chữ cái và khoảng trắng, không được chứa số"
+        />
+      </label>
+      
+      <label>
+        Ngày nhập thuốc:
+        <input
+          type="date"
+          name="entryDate"
+          value={formData.entryDate}
+          onChange={handleFormChange}
+          required
+        />
+      </label>
+      
+      <label>
+        Ngày hết hạn:
+        <input
+          type="date"
+          name="expDate"
+          value={formData.expDate}
+          onChange={handleFormChange}
+          required
+          min={formData.entryDate} // Đảm bảo ngày hết hạn phải sau ngày nhập
+          title="Ngày hết hạn phải sau ngày nhập"
+        />
+      </label>
+      
+      <label>
+        Số lượng thuốc:
+        <input
+          type="number"
+          name="quantity"
+          value={formData.quantity}
+          onChange={handleFormChange}
+          required
+          min="1" // Số lượng tối thiểu là 1
+          max="10000" // Giới hạn số lượng tối đa là 10,000
+          title="Số lượng phải là một số nguyên từ 1 đến 10,000"
+        />
+      </label>
+      
+      <button type="submit">Nhập</button>
+      <button type="button" onClick={() => setShowForm(false)}>
+        Hủy
+      </button>
+    </form>
+  </div>
+)}
 
        
         {/* Phân trang */}

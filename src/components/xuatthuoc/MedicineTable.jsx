@@ -339,6 +339,9 @@ const handleChange = (e) => {
             name="patientName"
             value={selectedMedicine?.patientName || ""}
             onChange={handleChange}
+            required
+            pattern="^[a-zA-Z\s]+$" // Chỉ cho phép chữ và khoảng trắng
+            title="Tên bệnh nhân chỉ được chứa chữ cái và khoảng trắng"
           />
         </p>
         <p>
@@ -348,6 +351,9 @@ const handleChange = (e) => {
             name="patientPhone"
             value={selectedMedicine?.patientPhone || ""}
             onChange={handleChange}
+            required
+            pattern="^\d{10,11}$" // Chỉ cho phép số và có độ dài từ 10 đến 11 ký tự
+            title="Số điện thoại phải có 10 hoặc 11 chữ số"
           />
         </p>
         <p>
@@ -357,6 +363,9 @@ const handleChange = (e) => {
             name="medicineName"
             value={selectedMedicine?.medicineName || ""}
             onChange={handleChange}
+            required
+            pattern="^[a-zA-Z\s]+$" // Chỉ cho phép chữ và khoảng trắng
+            title="Tên thuốc chỉ được chứa chữ cái và khoảng trắng"
           />
         </p>
         <p>
@@ -366,6 +375,9 @@ const handleChange = (e) => {
             name="medicineType"
             value={selectedMedicine?.medicineType || ""}
             onChange={handleChange}
+            required
+            pattern="^[a-zA-Z\s]+$" // Chỉ cho phép chữ và khoảng trắng
+            title="Loại thuốc chỉ được chứa chữ cái và khoảng trắng"
           />
         </p>
         <p>
@@ -375,6 +387,10 @@ const handleChange = (e) => {
             name="quantityDetails"
             value={selectedMedicine?.quantityDetails || ""}
             onChange={handleChange}
+            required
+            min="1" // Số lượng tối thiểu là 1
+            max="10000" // Giới hạn số lượng tối đa là 10,000
+            title="Số lượng phải là một số nguyên từ 1 đến 10,000"
           />
         </p>
         <p>
@@ -384,6 +400,7 @@ const handleChange = (e) => {
             name="dateOfTrans"
             value={selectedMedicine?.dateOfTrans || ""}
             onChange={handleChange}
+            required
           />
         </p>
       </div>
@@ -394,14 +411,12 @@ const handleChange = (e) => {
         >
           Xóa
         </button>
-        <button className="edit-btn" onClick={handleUpdate}>
-          Cập nhật
-        </button>
         <button onClick={() => setSelectedMedicine(null)}>Đóng</button>
       </div>
     </div>
   </div>
 )}
+
 
     </div>
   );

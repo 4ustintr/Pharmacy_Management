@@ -3,7 +3,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./notificationTable.scss";
-import Them from "../tableUser/Them.jsx"
+import Them from "../tableUser/Them.jsx";
 import { Link } from "react-router-dom";
 
 const NotificationTable = () => {
@@ -29,9 +29,15 @@ const NotificationTable = () => {
     const diffDays = diffTime / (1000 * 3600 * 24);
     return diffDays <= 30 && diffDays > 0;
   };
+
+  // Hàm kiểm tra số lượng thuốc nhỏ hơn 10
+  const isLowStock = (quantity) => {
+    return quantity < 10;
+  };
+
   const handleDelete = (medicineId) => {
-    setData(data.filter((item) => item.medicineId !== medicineId));
-    setFilteredData(filteredData.filter((item) => item.medicineId !== medicineId));
+    setMedications(medications.filter((item) => item.id !== medicineId));
+    setFilteredMedications(filteredMedications.filter((item) => item.id !== medicineId));
     toast.success("Đã xóa thuốc thành công!");
   };
 
@@ -42,12 +48,15 @@ const NotificationTable = () => {
         const response = await axios.get("http://localhost:8080/api/medicines"); // Thay bằng URL API thực tế
         const fetchedMedications = response.data;
 
-        // Phân loại thuốc hết hạn và sắp hết hạn
+        // Phân loại thuốc hết hạn, sắp hết hạn và số lượng nhỏ hơn 10
         const expired = fetchedMedications.filter((medication) =>
           isExpired(medication.expDate)
         );
         const expiringSoon = fetchedMedications.filter((medication) =>
           isExpiringSoon(medication.expDate)
+        );
+        const lowStock = fetchedMedications.filter((medication) =>
+          isLowStock(medication.quantity)
         );
 
         // Cập nhật danh sách thuốc
@@ -62,6 +71,9 @@ const NotificationTable = () => {
         }
         if (expiringSoon.length > 0) {
           toast.warning(`⏳ Có ${expiringSoon.length} thuốc sắp hết hạn!`);
+        }
+        if (lowStock.length > 0) {
+          toast.info(`⚠️ Có ${lowStock.length} thuốc có số lượng ít hơn 10!`);
         }
       } catch (error) {
         console.error("Lỗi khi lấy dữ liệu thuốc:", error);
@@ -108,7 +120,6 @@ const NotificationTable = () => {
         </div>
       </div>
 
-
       {/* Bảng thuốc */}
       <div className="medicationTable">
         <h3>Danh sách thuốc</h3>
@@ -126,14 +137,7 @@ const NotificationTable = () => {
           </thead>
           <tbody>
             {filteredMedications.map((medication, index) => (
-              <tr
-                key={medication.id}
-                style={{
-                  backgroundColor: isExpired(medication.expDate)
-                    ? "red"
-                    : "yellow",
-                }}
-              >
+              <tr key={medication.id}>
                 <td>{index + 1}</td>
                 <td>{medication.medicineName}</td>
                 <td>{medication.medicineType}</td>
@@ -145,19 +149,21 @@ const NotificationTable = () => {
                     : "Sắp hết hạn"}
                 </td>
                 <td>
-                <Link to={`/khothuoc/`}>
-                <button className="viewButton">Chi tiết</button>
-              </Link>
+                  {medication.quantity < 10 && (
+                    <span style={{ color: "red", fontWeight: "bold" }}>
+                      (Số lượng ít)
+                    </span>
+                  )}
+                  <Link to={`/khothuoc/`}>
+                    <button className="viewButton">Chi tiết</button>
+                  </Link>
                 </td>
               </tr>
             ))}
           </tbody>
+
         </table>
-        <Them
-        patient={selectedPatient}
-        onClose={() => setSelectedPatient(null)}
-        onDelete={handleDelete}
-      />
+        <Them patient={selectedPatient} onClose={() => setSelectedPatient(null)} onDelete={handleDelete} />
       </div>
     </div>
   );

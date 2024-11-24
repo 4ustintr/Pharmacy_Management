@@ -215,46 +215,60 @@ const Datatable = () => {
 
       {/* Modal Thêm Bệnh nhân */}
       {showAddPatientModal && (
-        <div className="modal">
-          <div className="modalContent">
-            <h3>Thêm Bệnh nhân</h3>
-            <form>
-              <input
-                type="text"
-                placeholder="Mã bệnh nhân"
-                value={newPatient.patientId}
-                onChange={(e) => setNewPatient({ ...newPatient, patientId: e.target.value })}
-              />
-              <input
-                type="text"
-                placeholder="Họ và tên"
-                value={newPatient.patientName}
-                onChange={(e) => setNewPatient({ ...newPatient, patientName: e.target.value })}
-              />
-              <input
-                type="text"
-                placeholder="Giới tính"
-                value={newPatient.gender}
-                onChange={(e) => setNewPatient({ ...newPatient, gender: e.target.value })}
-              />
-              <input
-                type="text"
-                placeholder="Địa chỉ"
-                value={newPatient.patientAddress}
-                onChange={(e) => setNewPatient({ ...newPatient, patientAddress: e.target.value })}
-              />
-              <input
-                type="text"
-                placeholder="Số điện thoại"
-                value={newPatient.patientPhone}
-                onChange={(e) => setNewPatient({ ...newPatient, patientPhone: e.target.value })}
-              />
-              <button type="button" onClick={handleAddPatient}>Thêm</button>
-              <button type="button" onClick={() => setShowAddPatientModal(false)}>Hủy</button>
-            </form>
-          </div>
-        </div>
-      )}
+  <div className="modal">
+    <div className="modalContent">
+      <h3>Thêm Bệnh nhân</h3>
+      <form>
+        <input
+          type="text"
+          placeholder="Mã bệnh nhân"
+          value={newPatient.patientId}
+          onChange={(e) => setNewPatient({ ...newPatient, patientId: e.target.value })}
+          required
+          pattern="^[A-Za-z0-9]+$" // Chỉ cho phép chữ cái và số
+          title="Mã bệnh nhân chỉ được chứa chữ và số"
+        />
+        <input
+          type="text"
+          placeholder="Họ và tên"
+          value={newPatient.patientName}
+          onChange={(e) => setNewPatient({ ...newPatient, patientName: e.target.value })}
+          required
+          pattern="^[A-Za-z\s]+$" // Chỉ cho phép chữ và khoảng trắng
+          title="Họ và tên chỉ được chứa chữ cái và khoảng trắng"
+        />
+        <input
+          type="text"
+          placeholder="Giới tính"
+          value={newPatient.gender}
+          onChange={(e) => setNewPatient({ ...newPatient, gender: e.target.value })}
+          required
+          pattern="^(Nam|Nữ)$" // Chỉ cho phép "Nam" hoặc "Nữ"
+          title="Giới tính chỉ có thể là 'Nam' hoặc 'Nữ'"
+        />
+        <input
+          type="text"
+          placeholder="Địa chỉ"
+          value={newPatient.patientAddress}
+          onChange={(e) => setNewPatient({ ...newPatient, patientAddress: e.target.value })}
+          required
+        />
+        <input
+          type="text"
+          placeholder="Số điện thoại"
+          value={newPatient.patientPhone}
+          onChange={(e) => setNewPatient({ ...newPatient, patientPhone: e.target.value })}
+          required
+          pattern="^\d{10,11}$" // Chỉ cho phép số và có độ dài từ 10 đến 11 ký tự
+          title="Số điện thoại phải có 10 hoặc 11 chữ số"
+        />
+        <button type="button" onClick={handleAddPatient}>Thêm</button>
+        <button type="button" onClick={() => setShowAddPatientModal(false)}>Hủy</button>
+      </form>
+    </div>
+  </div>
+)}
+
     </div>
   );
 };

@@ -128,7 +128,7 @@ const Them = ({ patient, onClose, onUpdate, onDelete, onRefresh }) => {
               <td>Ảnh thuốc:</td>
               <td>
                 <img
-                  src={`/public/avatar${patient.patientId}.png`} // Ảnh từ formData nếu có, nếu không dùng ảnh mặc định
+                  src={`public/avatar${patient.patientId}.png`} // Ảnh từ formData nếu có, nếu không dùng ảnh mặc định
                   alt="Medicine"
                   style={{ width: "100px", height: "100px", objectFit: "cover" }}
                 />

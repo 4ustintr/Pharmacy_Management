@@ -288,66 +288,80 @@ const DrugDashboard = () => {
 
       {/* Form nhập thuốc */}
       {showForm && (
-        <div className="formOverlay">
-          <form className="drugForm" onSubmit={handleSubmit}>
-            <h3>Nhập thuốc</h3>
-            <label>
-              Tên thuốc:
-              <input
-                type="text"
-                name="medicineName"
-                value={formData.medicineName}
-                onChange={handleFormChange}
-                required
-              />
-            </label>
-            <label>
-              Loại thuốc:
-              <input
-                type="text"
-                name="medicineType"
-                value={formData.medicineType}
-                onChange={handleFormChange}
-                required
-              />
-            </label>
-            <label>
-              Nhà cung cấp:
-              <input
-                type="text"
-                name="supplierName"
-                value={formData.supplierName}
-                onChange={handleFormChange}
-                required
-              />
-            </label>
-            <label>
-              Số điện thoại:
-              <input
-                type="text"
-                name="supplierPhone"
-                value={formData.supplierPhone}
-                onChange={handleFormChange}
-                required
-              />
-            </label>
-            <label>
-              Số lượng thuốc:
-              <input
-                type="number"
-                name="quantityContribution"
-                value={formData.quantityContribution}
-                onChange={handleFormChange}
-                required
-              />
-            </label>
-            <button type="submit">Nhập</button>
-            <button type="button" onClick={() => setShowForm(false)}>
-              Hủy
-            </button>
-          </form>
-        </div>
-      )}
+  <div className="formOverlay">
+    <form className="drugForm" onSubmit={handleSubmit}>
+      <h3>Nhập thuốc</h3>
+      
+      <label>
+        Tên thuốc:
+        <input
+          type="text"
+          name="medicineName"
+          value={formData.medicineName}
+          onChange={handleFormChange}
+          required
+          pattern="^[a-zA-Z\s]+$" // Chỉ cho phép chữ và khoảng trắng
+          title="Tên thuốc chỉ được chứa chữ cái và khoảng trắng"
+        />
+      </label>
+      
+      <label>
+        Loại thuốc:
+        <input
+          type="text"
+          name="medicineType"
+          value={formData.medicineType}
+          onChange={handleFormChange}
+          required
+        />
+      </label>
+      
+      <label>
+        Nhà cung cấp:
+        <input
+          type="text"
+          name="supplierName"
+          value={formData.supplierName}
+          onChange={handleFormChange}
+          required
+        />
+      </label>
+      
+      <label>
+        Số điện thoại:
+        <input
+          type="text"
+          name="supplierPhone"
+          value={formData.supplierPhone}
+          onChange={handleFormChange}
+          required
+          pattern="^\d{10,11}$" // Định dạng số điện thoại, chỉ cho phép 10 hoặc 11 chữ số
+          title="Số điện thoại phải có 10 hoặc 11 chữ số"
+        />
+      </label>
+      
+      <label>
+        Số lượng thuốc:
+        <input
+          type="number"
+          name="quantityContribution"
+          value={formData.quantityContribution}
+          onChange={handleFormChange}
+          required
+          min="1" // Đảm bảo số lượng lớn hơn hoặc bằng 1
+          max="10000" // Giới hạn số lượng tối đa là 10,000
+        />
+      </label>
+      
+      <button type="submit">Nhập</button>
+      <button type="button" onClick={() => setShowForm(false)}>
+        Hủy
+      </button>
+    </form>
+  </div>
+)}
+
+             
       {/* Modal hiển thị thông tin chi tiết */}
       {selectedMedicine && (
         <div className="modalOverlay">
