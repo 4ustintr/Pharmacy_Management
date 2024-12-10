@@ -21,11 +21,8 @@ public class ContributionController {
     }
 
     @PostMapping
-    public String addMedicineContribution(@RequestBody Contribution contribution) {
-        contributionService.addMedicineContribution(
-                contribution.getMedicineId(),
-                contribution.getSupplierId(),
-                contribution.getQuantityContribution());
+    public String addMedicineContribution(@RequestBody ContributionDTO dto) {
+        contributionService.addMedicineContribution(dto);
         return "nhập thuốc thành công !";
     }
 

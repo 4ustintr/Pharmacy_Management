@@ -5,8 +5,10 @@ import com.pharmacymanagement.backend.exception.InvalidDataException;
 import com.pharmacymanagement.backend.exception.ResourceNotFoundException;
 import com.pharmacymanagement.backend.model.Contribution;
 import com.pharmacymanagement.backend.model.Medicine;
+import com.pharmacymanagement.backend.model.Supplier;
 import com.pharmacymanagement.backend.repository.ContributionRepository;
 import com.pharmacymanagement.backend.repository.MedicineRepository;
+import com.pharmacymanagement.backend.repository.SupplierRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,6 +23,8 @@ public class ContributionService {
     private ContributionRepository contributionRepository;
     @Autowired
     private MedicineRepository medicineRepository;
+    @Autowired
+    private SupplierRepository supplierRepository;
 
     @Autowired
     private ModelMapper modelMapper;
@@ -37,37 +41,44 @@ public class ContributionService {
         return contributionDTOs;
     }
 
-    public void addMedicineContribution(Integer medicineId, Integer supplierId, Integer quantityContribution) {
-        if (quantityContribution == null || quantityContribution <= 0) {
-            throw new InvalidDataException("Vui lòng nhập số nguyên dương !");
+    public void addMedicineContribution(ContributionDTO dto) {
+        if (dto.getQuantityContribution() == null || dto.getQuantityContribution() <= 0) {
+            throw new InvalidDataException("Vui lòng nhập số nguyên dương cho số lượng đóng góp!");
         }
 
-        Medicine medicine = medicineRepository.findById(medicineId)
-                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy thuốc với Id là: "+medicineId));
+        Medicine medicine = medicineRepository.findByMedicineName(dto.getMedicineName())
+                .orElseThrow(() -> new ResourceNotFoundException("Medicine not found"));
 
-        medicine.setQuantity(medicine.getQuantity() + quantityContribution);
+        Supplier supplier = supplierRepository.findBySupplierName(dto.getSupplierName())
+                .orElseThrow(() -> new ResourceNotFoundException("Supplier not found"));
+
+        medicine.setQuantity(medicine.getQuantity() + dto.getQuantityContribution());
         medicineRepository.save(medicine);
 
         Contribution contribution = new Contribution();
-        contribution.setMedicineId(medicineId);
-        contribution.setSupplierId(supplierId);
-        contribution.setQuantityContribution(quantityContribution);
+        contribution.setMedicine(medicine);
+        contribution.setSupplier(supplier);
+        contribution.setQuantityContribution(dto.getQuantityContribution());
 
         contributionRepository.save(contribution);
     }
 
     public void deleteContributionById(Integer contributionId) {
         Contribution contribution = contributionRepository.findById(contributionId)
-                .orElseThrow(() -> new ResourceNotFoundException("Khoông tìm thấy thông tin nhập thuốc với id là: "+contributionId));
+                .orElseThrow(() -> new ResourceNotFoundException("Khoông tìm thấy thông tin nhập thuốc với id là: " + contributionId));
 
-        Medicine medicine = medicineRepository.findById(contribution.getMedicineId())
-                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy thông tin thuốc với Id là: "+contribution.getMedicineId()));
+        Medicine medicine = contribution.getMedicine();
+        if (medicine != null) {
 
-        medicine.setQuantity(medicine.getQuantity() - contribution.getQuantityContribution());
-        medicineRepository.save(medicine);
+            int newQuantity = medicine.getQuantity() - contribution.getQuantityContribution();
+            medicine.setQuantity(newQuantity);
+            medicineRepository.save(medicine);
 
-        contributionRepository.delete(contribution);
+            contributionRepository.delete(contribution);
+        }
     }
+
+
 
 
 

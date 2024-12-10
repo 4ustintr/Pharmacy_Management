@@ -14,13 +14,13 @@ public class ModelMapperConfig {
     @Bean
     public ModelMapper modelMapper() {
         ModelMapper modelMapper = new ModelMapper();
-        // Cấu hình ánh xạ tùy chỉnh
+
         modelMapper.addMappings(new PropertyMap<InvoiceDetails, InvoiceDetailsDTO>() {
             @Override
             protected void configure() {
-                map().setPatientName(source.getPatient().getPatientName());   // Ánh xạ tên bệnh nhân
+                map().setPatientName(source.getPatient().getPatientName());
                 map().setPatientPhone(source.getPatient().getPatientPhone());
-                map().setMedicineName(source.getMedicine().getMedicineName()); // Ánh xạ tên thuốc
+                map().setMedicineName(source.getMedicine().getMedicineName());
                 map().setMedicineType(source.getMedicine().getMedicineType());
             }
         });

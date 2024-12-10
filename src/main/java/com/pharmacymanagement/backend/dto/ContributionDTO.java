@@ -4,7 +4,7 @@ import lombok.Data;
 
 @Data
 public class ContributionDTO {
-    private Integer contributionId;
+    private int contributionId;
     private String medicineName;
     private String medicineType;
     private String supplierName;

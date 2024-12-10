@@ -9,12 +9,14 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface MedicineRepository extends JpaRepository<Medicine, Integer> {
     List<Medicine> findByExpDateBetween(LocalDate startDate, LocalDate endDate);
     List<Medicine> findByExpDateBefore(LocalDate currentDate);
     List<Medicine> findByQuantityLessThan(Integer quantity);
+    Optional<Medicine> findByMedicineName(String medicineName);
 
     @Modifying
     @Transactional

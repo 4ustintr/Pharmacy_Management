@@ -18,9 +18,14 @@ public class MedicineService {
          return medicineRepository.findAll();
      }
 
-     public Medicine getMedicineById(int id) {
+     public Medicine getMedicine(int id) {
           return medicineRepository.findById(id)
-                  .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy thuốc với Id là:"+id));
+                  .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy thuốc với ID: " + id));
+     }
+
+     public Medicine getMedicine(String name) {
+          return medicineRepository.findByMedicineName(name)
+                  .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy thuốc với tên: " + name));
      }
 
      public Medicine addMedicine(Medicine medicine) {

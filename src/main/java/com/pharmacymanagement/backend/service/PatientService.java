@@ -1,5 +1,6 @@
 package com.pharmacymanagement.backend.service;
 
+import com.pharmacymanagement.backend.exception.ResourceNotFoundException;
 import com.pharmacymanagement.backend.model.Patient;
 import com.pharmacymanagement.backend.repository.PatientRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +19,7 @@ public class PatientService {
     }
 
     public Patient getPatientById(int id) {
-        return patientRepository.findById(id).orElse(null);
+        return patientRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy thông tin bệnh nhân"));
     }
 
     public Patient addPatient(Patient patient) {
@@ -26,7 +27,7 @@ public class PatientService {
     }
 
     public Patient updatePatient(int id, Patient updatedPatient) {
-        Patient patient = patientRepository.findById(id).orElse(null);
+        Patient patient = patientRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy thông tin bệnh nhân"));
         if (patient != null) {
             patient.setPatientName(updatedPatient.getPatientName());
             patient.setGender(updatedPatient.getGender());

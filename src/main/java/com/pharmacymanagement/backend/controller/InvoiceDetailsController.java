@@ -1,7 +1,6 @@
 package com.pharmacymanagement.backend.controller;
 
 import com.pharmacymanagement.backend.dto.InvoiceDetailsDTO;
-import com.pharmacymanagement.backend.model.InvoiceDetails;
 import com.pharmacymanagement.backend.service.InvoiceDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -21,12 +20,8 @@ public class InvoiceDetailsController {
     }
     
     @PostMapping
-    public String addInvoiceDetails(@RequestBody InvoiceDetails invoiceDetails) {
-        invoiceDetailsService.addMedicineInvoiceDetails(
-                invoiceDetails.getMedicineId(),
-                invoiceDetails.getPatientId(),
-                invoiceDetails.getQuantityDetails(),
-                invoiceDetails.getDateOfTrans());
+    public String addInvoiceDetails(@RequestBody InvoiceDetailsDTO dto) {
+        invoiceDetailsService.addMedicineInvoiceDetails(dto);
         return "xuất thuốc thành công !";
     }
 

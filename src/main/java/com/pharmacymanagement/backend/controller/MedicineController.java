@@ -21,7 +21,7 @@ public class MedicineController {
 
     @GetMapping("/{id}")
     public Medicine getMedicineById(@PathVariable int id) {
-        return medicineService.getMedicineById(id);
+        return medicineService.getMedicine(id);
     }
 
     @PostMapping

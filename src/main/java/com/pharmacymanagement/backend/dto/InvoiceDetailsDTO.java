@@ -6,7 +6,7 @@ import java.time.LocalDate;
 
 @Data
 public class InvoiceDetailsDTO {
-    private Integer invoiceDetailsId;
+    private int invoiceDetailsId;
     private String patientName;
     private String patientPhone;
     private String medicineName;
